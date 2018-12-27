@@ -736,15 +736,26 @@ public final class StringUtils {
         }
         return buf.toString();
     }
+    //驼峰名字按照特定的split字符转换
 
+    /**
+     * camelName-> camel-name
+     * @param camelName
+     * @param split
+     * @return
+     */
     public static String camelToSplitName(String camelName, String split) {
+        //数据校验
         if (isEmpty(camelName)) {
             return camelName;
         }
         StringBuilder buf = null;
         for (int i = 0; i < camelName.length(); i++) {
+            //获取每个字符位置对应的char
             char ch = camelName.charAt(i);
+            //如果字符为 A～Z时
             if (ch >= 'A' && ch <= 'Z') {
+                //首字符时；
                 if (buf == null) {
                     buf = new StringBuilder();
                     if (i > 0) {

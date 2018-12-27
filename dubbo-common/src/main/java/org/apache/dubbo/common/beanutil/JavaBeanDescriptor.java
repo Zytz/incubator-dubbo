@@ -140,7 +140,7 @@ public final class JavaBeanDescriptor implements Serializable, Iterable<Map.Entr
         }
         throw new IllegalStateException("The instance is not a enum wrapper");
     }
-
+    //每个方法执行之后都要有出口
     public String setClassNameProperty(String name) {
         if (isClassType()) {
             Object result = setProperty(CLASS_PROPERTY_NAME, name);

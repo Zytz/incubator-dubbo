@@ -49,6 +49,7 @@ public class ConfigUtils {
         return !isEmpty(value);
     }
 
+    //判断是否为空，更具有中国特色
     public static boolean isEmpty(String value) {
         return value == null || value.length() == 0
                 || "false".equalsIgnoreCase(value)
