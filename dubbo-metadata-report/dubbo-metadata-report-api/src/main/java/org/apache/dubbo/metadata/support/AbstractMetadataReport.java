@@ -52,6 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ *
  */
 public abstract class AbstractMetadataReport implements MetadataReport {
 
@@ -229,6 +230,7 @@ public abstract class AbstractMetadataReport implements MetadataReport {
         }
     }
 
+    @Override
     public void storeProviderMetadata(MetadataIdentifier providerMetadataIdentifier, FullServiceDefinition serviceDefinition) {
         if (syncReport) {
             storeProviderMetadataTask(providerMetadataIdentifier, serviceDefinition);
@@ -261,6 +263,7 @@ public abstract class AbstractMetadataReport implements MetadataReport {
         }
     }
 
+    @Override
     public void storeConsumerMetadata(MetadataIdentifier consumerMetadataIdentifier, Map<String, String> serviceParameterMap) {
         if (syncReport) {
             storeConsumerMetadataTask(consumerMetadataIdentifier, serviceParameterMap);
@@ -329,6 +332,7 @@ public abstract class AbstractMetadataReport implements MetadataReport {
      * not private. just for unittest.
      */
     void publishAll() {
+        logger.info("start to publish all metadata.");
         this.doHandleMetadataCollection(allMetadataReports);
     }
 
@@ -353,7 +357,7 @@ public abstract class AbstractMetadataReport implements MetadataReport {
         protected final Logger logger = LoggerFactory.getLogger(getClass());
 
         final ScheduledExecutorService retryExecutor = Executors.newScheduledThreadPool(0, new NamedThreadFactory("DubboRegistryFailedRetryTimer", true));
-        ScheduledFuture retryScheduledFuture;
+        volatile ScheduledFuture retryScheduledFuture;
         AtomicInteger retryCounter = new AtomicInteger(0);
         // retry task schedule period
         long retryPeriod;
