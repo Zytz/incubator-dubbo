@@ -30,6 +30,8 @@ import java.util.concurrent.TimeUnit;
  * EagerThreadPool
  * When the core threads are all in busy,
  * create new thread instead of putting task into blocking queue.
+ *
+ * 饥渴的线程池；
  */
 public class EagerThreadPool implements ThreadPool {
 

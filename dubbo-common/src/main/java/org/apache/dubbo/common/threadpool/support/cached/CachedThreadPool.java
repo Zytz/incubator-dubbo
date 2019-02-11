@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * This thread pool is self-tuned. Thread will be recycled after idle for one minute, and new thread will be created for
  * the upcoming request.
+ * 线程池是自和谐的，一分钟空闲之后，会被自动回收；有新的请求，新的线程会被唤起
  *
  * @see java.util.concurrent.Executors#newCachedThreadPool()
  */

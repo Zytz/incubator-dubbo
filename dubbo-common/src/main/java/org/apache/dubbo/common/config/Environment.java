@@ -49,15 +49,15 @@ public class Environment {
     public static Environment getInstance() {
         return INSTANCE;
     }
-
+    //属性配置
     public PropertiesConfiguration getPropertiesConfig(String prefix, String id) {
         return propertiesConfigs.computeIfAbsent(toKey(prefix, id), k -> new PropertiesConfiguration(prefix, id));
     }
-
+    //系统配置
     public SystemConfiguration getSystemConfig(String prefix, String id) {
         return systemConfigs.computeIfAbsent(toKey(prefix, id), k -> new SystemConfiguration(prefix, id));
     }
-
+    //缓存在内存 外部配置
     public InmemoryConfiguration getExternalConfig(String prefix, String id) {
         return externalConfigs.computeIfAbsent(toKey(prefix, id), k -> {
             InmemoryConfiguration configuration = new InmemoryConfiguration(prefix, id);
@@ -65,7 +65,7 @@ public class Environment {
             return configuration;
         });
     }
-
+    //缓存在内存中的 内部配置
     public InmemoryConfiguration getAppExternalConfig(String prefix, String id) {
         return appExternalConfigs.computeIfAbsent(toKey(prefix, id), k -> {
             InmemoryConfiguration configuration = new InmemoryConfiguration(prefix, id);
@@ -107,6 +107,8 @@ public class Environment {
      * Otherwise, if use cache, we should make sure each Config has a unique id which is difficult to guarantee because is on the user's side,
      * especially when it comes to ServiceConfig and ReferenceConfig.
      *
+     *  配置组合
+     *
      * @param prefix
      * @param id
      * @return
@@ -114,6 +116,7 @@ public class Environment {
     public CompositeConfiguration getConfiguration(String prefix, String id) {
         CompositeConfiguration compositeConfiguration = new CompositeConfiguration();
         // Config center has the highest priority
+        //注意没有  InmemoryConfiguration的配置
         compositeConfiguration.addConfiguration(this.getSystemConfig(prefix, id));
         compositeConfiguration.addConfiguration(this.getAppExternalConfig(prefix, id));
         compositeConfiguration.addConfiguration(this.getExternalConfig(prefix, id));
@@ -126,6 +129,7 @@ public class Environment {
     }
 
     private static String toKey(String prefix, String id) {
+        //乐观锁的解决方案
         StringBuilder sb = new StringBuilder();
         if (StringUtils.isNotEmpty(prefix)) {
             sb.append(prefix);

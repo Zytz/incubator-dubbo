@@ -32,6 +32,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * Creates a thread pool that creates new threads as needed until limits reaches. This thread pool will not shrink
  * automatically.
+ *
+ * 能够自动的增长，容量
  */
 public class LimitedThreadPool implements ThreadPool {
 

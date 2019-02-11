@@ -56,7 +56,7 @@ public final class ClassGenerator {
     private ClassPool mPool;
     private CtClass mCtc;
     private String mClassName;
-    private String mSuperC｀ lass;
+    private String mSuperClass;
     private Set<String> mInterfaces;
     private List<String> mFields;
     private List<String> mConstructors;

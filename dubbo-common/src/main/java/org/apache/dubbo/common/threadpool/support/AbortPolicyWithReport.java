@@ -45,7 +45,7 @@ public class AbortPolicyWithReport extends ThreadPoolExecutor.AbortPolicy {
     private final URL url;
 
     private static volatile long lastPrintTime = 0;
-
+    //信号量
     private static Semaphore guard = new Semaphore(1);
 
     public AbortPolicyWithReport(String threadName, URL url) {
@@ -65,7 +65,7 @@ public class AbortPolicyWithReport extends ThreadPoolExecutor.AbortPolicy {
         dumpJStack();
         throw new RejectedExecutionException(msg);
     }
-
+    //Jstack java 线程中的内容
     private void dumpJStack() {
         long now = System.currentTimeMillis();
 
@@ -73,7 +73,7 @@ public class AbortPolicyWithReport extends ThreadPoolExecutor.AbortPolicy {
         if (now - lastPrintTime < 10 * 60 * 1000) {
             return;
         }
-
+        //获取到信号量，得到资源，保证只有一个线程在执行
         if (!guard.tryAcquire()) {
             return;
         }

@@ -23,12 +23,14 @@ import org.apache.dubbo.common.extension.SPI;
 
 /**
  * ProxyFactory. (API/SPI, Singleton, ThreadSafe)
+ *
  */
 @SPI("javassist")
 public interface ProxyFactory {
 
     /**
      * create proxy.
+     *创建代理；在引用服务是调用
      *
      * @param invoker
      * @return proxy
@@ -37,7 +39,6 @@ public interface ProxyFactory {
     <T> T getProxy(Invoker<T> invoker) throws RpcException;
 
     /**
-     * create proxy.
      *
      * @param invoker
      * @return proxy
@@ -48,6 +49,8 @@ public interface ProxyFactory {
     /**
      * create invoker.
      *
+     *  create proxy.
+     *      *创建代理，在暴露服务时调用
      * @param <T>
      * @param proxy
      * @param type

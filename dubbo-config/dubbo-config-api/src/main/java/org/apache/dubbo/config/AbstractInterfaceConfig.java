@@ -300,6 +300,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                     map.put("path", RegistryService.class.getName());
                     appendRuntimeParameters(map);
                     if (!map.containsKey("protocol")) {
+                        //默认协议：dubbo(netty)
                         map.put("protocol", "dubbo");
                     }
                     List<URL> urls = UrlUtils.parseURLs(address, map);

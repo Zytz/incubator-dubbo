@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EagerThreadPoolExecutor extends ThreadPoolExecutor {
 
     /**
-     * task count
+     * task count 已经提交的任务总数
      */
     private final AtomicInteger submittedTaskCount = new AtomicInteger(0);
 

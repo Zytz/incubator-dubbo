@@ -20,7 +20,6 @@ import org.apache.dubbo.common.config.Environment;
 import org.apache.dubbo.common.utils.ConfigUtils;
 import org.apache.dubbo.config.api.Greeting;
 import org.apache.dubbo.config.support.Parameter;
-
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -41,68 +40,69 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class AbstractConfigTest {
 
     //FIXME
-    /*@Test
-    public void testAppendProperties1() throws Exception {
-        try {
-            System.setProperty("dubbo.properties.i", "1");
-            System.setProperty("dubbo.properties.c", "c");
-            System.setProperty("dubbo.properties.b", "2");
-            System.setProperty("dubbo.properties.d", "3");
-            System.setProperty("dubbo.properties.f", "4");
-            System.setProperty("dubbo.properties.l", "5");
-            System.setProperty("dubbo.properties.s", "6");
-            System.setProperty("dubbo.properties.str", "dubbo");
-            System.setProperty("dubbo.properties.bool", "true");
-            PropertiesConfig config = new PropertiesConfig();
-            AbstractConfig.appendProperties(config);
-            Assertions.assertEquals(1, config.getI());
-            Assertions.assertEquals('c', config.getC());
-            Assertions.assertEquals((byte) 0x02, config.getB());
-            Assertions.assertEquals(3d, config.getD());
-            Assertions.assertEquals(4f, config.getF());
-            Assertions.assertEquals(5L, config.getL());
-            Assertions.assertEquals(6, config.getS());
-            Assertions.assertEquals("dubbo", config.getStr());
-            Assertions.assertTrue(config.isBool());
-        } finally {
-            System.clearProperty("dubbo.properties.i");
-            System.clearProperty("dubbo.properties.c");
-            System.clearProperty("dubbo.properties.b");
-            System.clearProperty("dubbo.properties.d");
-            System.clearProperty("dubbo.properties.f");
-            System.clearProperty("dubbo.properties.l");
-            System.clearProperty("dubbo.properties.s");
-            System.clearProperty("dubbo.properties.str");
-            System.clearProperty("dubbo.properties.bool");
-        }
-    }
+//    @Test
+//    public void testAppendProperties1() throws Exception {
+//        try {
+//            System.setProperty("dubbo.properties.i", "1");
+//            System.setProperty("dubbo.properties.c", "c");
+//            System.setProperty("dubbo.properties.b", "2");
+//            System.setProperty("dubbo.properties.d", "3");
+//            System.setProperty("dubbo.properties.f", "4");
+//            System.setProperty("dubbo.properties.l", "5");
+//            System.setProperty("dubbo.properties.s", "6");
+//            System.setProperty("dubbo.properties.str", "dubbo");
+//            System.setProperty("dubbo.properties.bool", "true");
+//            PropertiesConfig config = new PropertiesConfig();
+//
+////            AbstractConfig.appendProperties(config);
+//            TestCase.assertEquals(1, config.getI());
+//            TestCase.assertEquals('c', config.getC());
+//            TestCase.assertEquals((byte) 0x02, config.getB());
+//            TestCase.assertEquals(3d, config.getD());
+//            TestCase.assertEquals(4f, config.getF());
+//            TestCase.assertEquals(5L, config.getL());
+//            TestCase.assertEquals(6, config.getS());
+//            TestCase.assertEquals("dubbo", config.getStr());
+//            TestCase.assertTrue(config.isBool());
+//        } finally {
+//            System.clearProperty("dubbo.properties.i");
+//            System.clearProperty("dubbo.properties.c");
+//            System.clearProperty("dubbo.properties.b");
+//            System.clearProperty("dubbo.properties.d");
+//            System.clearProperty("dubbo.properties.f");
+//            System.clearProperty("dubbo.properties.l");
+//            System.clearProperty("dubbo.properties.s");
+//            System.clearProperty("dubbo.properties.str");
+//            System.clearProperty("dubbo.properties.bool");
+//        }
+//    }
 
-    @Test
-    public void testAppendProperties2() throws Exception {
-        try {
-            System.setProperty("dubbo.properties.two.i", "2");
-            PropertiesConfig config = new PropertiesConfig("two");
-            AbstractConfig.appendProperties(config);
-            Assertions.assertEquals(2, config.getI());
-        } finally {
-            System.clearProperty("dubbo.properties.two.i");
-        }
-    }
-
-    @Test
-    public void testAppendProperties3() throws Exception {
-        try {
-            Properties p = new Properties();
-            p.put("dubbo.properties.str", "dubbo");
-            ConfigUtils.setProperties(p);
-            PropertiesConfig config = new PropertiesConfig();
-            AbstractConfig.appendProperties(config);
-            Assertions.assertEquals("dubbo", config.getStr());
-        } finally {
-            System.clearProperty(Constants.DUBBO_PROPERTIES_KEY);
-            ConfigUtils.setProperties(null);
-        }
-    }*/
+//    @Test
+//    public void testAppendProperties2() throws Exception {
+//        try {
+//            System.setProperty("dubbo.properties.two.i", "2");
+//            PropertiesConfig config = new PropertiesConfig("two");
+//            AbstractConfig.appendProperties(config);
+//            TestCase.assertEquals(2, config.getI());
+//        } finally {
+//            System.clearProperty("dubbo.properties.two.i");
+//        }
+//    }
+//
+//    @Test
+//    public void testAppendProperties3() throws Exception {
+//        try {
+//            Properties p = new Properties();
+//            p.put("dubbo.properties.str", "dubbo");
+//            ConfigUtils.setProperties(p);
+//            PropertiesConfig config = new PropertiesConfig();
+//            AbstractConfig.appendProperties(config);
+//            TestCase.assertEquals("dubbo", config.getStr());
+//        } finally {
+//            System.clearProperty(Constants.DUBBO_PROPERTIES_KEY);
+//            ConfigUtils.setProperties(null);
+//        }
+//    }
 
     @Test
     public void testAppendParameters1() throws Exception {

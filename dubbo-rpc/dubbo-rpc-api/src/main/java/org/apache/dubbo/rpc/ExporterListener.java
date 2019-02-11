@@ -20,12 +20,15 @@ import org.apache.dubbo.common.extension.SPI;
 
 /**
  * ExporterListener. (SPI, Singleton, ThreadSafe)
+ * exporter 监听器
  */
 @SPI
 public interface ExporterListener {
 
     /**
      * The exporter exported.
+     *
+     * 当服务已经包装成protocol中服务
      *
      * @param exporter
      * @throws RpcException
@@ -35,6 +38,7 @@ public interface ExporterListener {
 
     /**
      * The exporter unexported.
+     * 当服务暴露取消完成
      *
      * @param exporter
      * @throws RpcException

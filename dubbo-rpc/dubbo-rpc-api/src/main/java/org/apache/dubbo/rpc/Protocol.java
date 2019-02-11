@@ -22,6 +22,8 @@ import org.apache.dubbo.common.extension.SPI;
 
 /**
  * Protocol. (API/SPI, Singleton, ThreadSafe)
+ *
+ * 的
  */
 @SPI("dubbo")
 public interface Protocol {
@@ -59,8 +61,8 @@ public interface Protocol {
      * connection fails.
      *
      * @param <T>  Service type
-     * @param type Service class
-     * @param url  URL address for the remote service
+     * @param type Service class （provider service）
+     * @param url  URL address for the remote service 远程服务的URL，provided
      * @return invoker service's local proxy
      * @throws RpcException when there's any error while connecting to the service provider
      */

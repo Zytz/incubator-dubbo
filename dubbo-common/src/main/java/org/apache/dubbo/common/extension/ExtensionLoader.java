@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 
 /**
  * Load dubbo extensions
+ * SPI核心代码区域
  * <ul>
  * <li>auto inject dependency extension </li>
  * <li>auto wrap extension in wrapper </li>
@@ -59,7 +60,7 @@ import java.util.regex.Pattern;
  * @see org.apache.dubbo.common.extension.Activate
  */
 public class ExtensionLoader<T> {
-
+    // same with common-logs
     private static final Logger logger = LoggerFactory.getLogger(ExtensionLoader.class);
 
     private static final String SERVICES_DIRECTORY = "META-INF/services/";
@@ -69,21 +70,31 @@ public class ExtensionLoader<T> {
     private static final String DUBBO_INTERNAL_DIRECTORY = DUBBO_DIRECTORY + "internal/";
 
     private static final Pattern NAME_SEPARATOR = Pattern.compile("\\s*[,]+\\s*");
+    /**
+     *key : interface name
+     * 扩展加载类集合
+     */
 
     private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();
-
+    /**
+     * 扩展实现类
+     *   key：拓展实现类
+     *   value：拓展对象。
+     *   例如，key 为 Class<AccessLogFilter>
+     *   value 为 AccessLogFilter 对象
+     */
     private static final ConcurrentMap<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<Class<?>, Object>();
 
     // ==============================
-
+    //拓展接口
     private final Class<?> type;
-
+    //扩展加载的工厂类
     private final ExtensionFactory objectFactory;
-
+    //缓存名称
     private final ConcurrentMap<Class<?>, String> cachedNames = new ConcurrentHashMap<Class<?>, String>();
-
+    //缓存类型
     private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<Map<String, Class<?>>>();
-
+    //缓存是否可用
     private final Map<String, Object> cachedActivates = new ConcurrentHashMap<String, Object>();
     private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();
     private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>();

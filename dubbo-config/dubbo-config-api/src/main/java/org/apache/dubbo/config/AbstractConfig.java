@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 
 /**
  * Utility methods and public methods for parsing configuration
- *
+ * 解析dubbo的配置文件
  * @export
  */
 public abstract class AbstractConfig implements Serializable {
@@ -541,6 +541,7 @@ public abstract class AbstractConfig implements Serializable {
      */
     public void refresh() {
         try {
+            //将各种配置方法得到的config组装起来
             CompositeConfiguration compositeConfiguration = Environment.getInstance().getConfiguration(getPrefix(), getId());
             InmemoryConfiguration config = new InmemoryConfiguration(getPrefix(), getId());
             config.addProperties(getMetaData());
