@@ -27,12 +27,14 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractCompiler implements Compiler {
 
+    //正则 包名
     private static final Pattern PACKAGE_PATTERN = Pattern.compile("package\\s+([$_a-zA-Z][$_a-zA-Z0-9\\.]*);");
-
+    //正则 类名
     private static final Pattern CLASS_PATTERN = Pattern.compile("class\\s+([$_a-zA-Z][$_a-zA-Z0-9]*)\\s+");
-
+    //将string类型的数据转换成class name;
     @Override
     public Class<?> compile(String code, ClassLoader classLoader) {
+        //处理包名的部分
         code = code.trim();
         Matcher matcher = PACKAGE_PATTERN.matcher(code);
         String pkg;
@@ -41,6 +43,7 @@ public abstract class AbstractCompiler implements Compiler {
         } else {
             pkg = "";
         }
+        //处理类的部分
         matcher = CLASS_PATTERN.matcher(code);
         String cls;
         if (matcher.find()) {
@@ -48,6 +51,7 @@ public abstract class AbstractCompiler implements Compiler {
         } else {
             throw new IllegalArgumentException("No such class name in " + code);
         }
+        //完整 类名
         String className = pkg != null && pkg.length() > 0 ? pkg + "." + cls : cls;
         try {
             return Class.forName(className, true, ClassHelper.getCallerClassLoader(getClass()));

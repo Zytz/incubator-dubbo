@@ -37,11 +37,11 @@ import java.util.concurrent.CompletableFuture;
  */
 public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
     Logger logger = LoggerFactory.getLogger(AbstractProxyInvoker.class);
-
+    //service的实现对象
     private final T proxy;
-
+    //service接口
     private final Class<T> type;
-
+    //调用URL
     private final URL url;
 
     public AbstractProxyInvoker(T proxy, Class<T> type, URL url) {
@@ -81,11 +81,14 @@ public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
     // TODO Unified to AsyncResult?
     @Override
     public Result invoke(Invocation invocation) throws RpcException {
+        //the context handle the state for thread
         RpcContext rpcContext = RpcContext.getContext();
         try {
             Object obj = doInvoke(proxy, invocation.getMethodName(), invocation.getParameterTypes(), invocation.getArguments());
+            //是否使用future方法
             if (RpcUtils.isReturnTypeFuture(invocation)) {
                 return new AsyncRpcResult((CompletableFuture<Object>) obj);
+                //如果是异步返回
             } else if (rpcContext.isAsyncStarted()) { // ignore obj in case of RpcContext.startAsync()? always rely on user to write back.
                 return new AsyncRpcResult(((AsyncContextImpl)(rpcContext.getAsyncContext())).getInternalFuture());
             } else {

@@ -20,6 +20,7 @@ import org.apache.dubbo.common.extension.SPI;
 
 /**
  * Compiler. (SPI, Singleton, ThreadSafe)
+ * 默认采取的字节码编译的工具是javassist
  */
 @SPI("javassist")
 public interface Compiler {

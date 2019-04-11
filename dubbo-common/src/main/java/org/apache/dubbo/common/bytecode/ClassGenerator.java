@@ -46,7 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * ClassGenerator
+ * ClassGenerator 基于javassist的class 生成器
  */
 public final class ClassGenerator {
 
@@ -86,6 +86,7 @@ public final class ClassGenerator {
 
     public static ClassPool getClassPool(ClassLoader loader) {
         if (loader == null) {
+            //用默认的方式
             return ClassPool.getDefault();
         }
 

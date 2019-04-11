@@ -37,7 +37,9 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
     private Logger logger = LoggerFactory.getLogger(ZkclientZookeeperClient.class);
 
     private final ZkClientWrapper client;
-
+    /**
+     * 用volatile修饰的state ， happen it before
+     */
     private volatile KeeperState state = KeeperState.SyncConnected;
 
     public ZkclientZookeeperClient(URL url) {
@@ -62,7 +64,7 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
         });
         client.start();
     }
-
+    //创建持久节点
     @Override
     public void createPersistent(String path) {
         try {
@@ -71,7 +73,7 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
             logger.error("zookeeper failed to create persistent node with " + path + ": ", e);
         }
     }
-
+    //创建临时节点
     @Override
     public void createEphemeral(String path) {
         try {
@@ -81,6 +83,7 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
         }
     }
 
+    //创建持久的节点
     @Override
     protected void createPersistent(String path, String data) {
         try {

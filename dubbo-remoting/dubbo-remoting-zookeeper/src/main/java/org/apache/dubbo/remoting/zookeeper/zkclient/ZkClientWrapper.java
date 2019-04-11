@@ -32,12 +32,14 @@ import java.util.concurrent.TimeUnit;
  * Zkclient wrapper class that can monitor the state of the connection automatically after the connection is out of time
  * It is also consistent with the use of curator
  *
+ * zkclient 的包装类
  * @date 2017/10/29
  */
 public class ZkClientWrapper {
     private Logger logger = LoggerFactory.getLogger(ZkClientWrapper.class);
     private long timeout;
     private ZkClient client;
+    //
     private volatile KeeperState state;
     private CompletableFuture<ZkClient> completableFuture;
     private volatile boolean started = false;
@@ -120,7 +122,7 @@ public class ZkClientWrapper {
         Assert.notNull(client, new IllegalStateException("Zookeeper is not connected yet!"));
         client.close();
     }
-
+    //订阅子节点 childchange
     public List<String> subscribeChildChanges(String path, final IZkChildListener listener) {
         Assert.notNull(client, new IllegalStateException("Zookeeper is not connected yet!"));
         return client.subscribeChildChanges(path, listener);
@@ -131,12 +133,17 @@ public class ZkClientWrapper {
         client.unsubscribeChildChanges(path, listener);
     }
 
+    /**
+     * 初始化zkclient
+     * @param client
+     * @param e
+     */
     private void makeClientReady(ZkClient client, Throwable e) {
         if (e != null) {
             logger.error("Got an exception when trying to create zkclient instance, can not connect to zookeeper server, please check!", e);
         } else {
             this.client = client;
-//            this.client.subscribeStateChanges(IZkStateListener);
+//            this.client.subscribeStateChanges(client);
         }
     }
 

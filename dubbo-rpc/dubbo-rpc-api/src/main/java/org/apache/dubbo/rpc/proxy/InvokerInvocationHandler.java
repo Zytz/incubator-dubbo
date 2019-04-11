@@ -39,26 +39,36 @@ public class InvokerInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        //获取方法名
         String methodName = method.getName();
+        //获取方法中的参数
         Class<?>[] parameterTypes = method.getParameterTypes();
+        //定义的方法名为Object时,直接反射调用，不需要RPC
         if (method.getDeclaringClass() == Object.class) {
             return method.invoke(invoker, args);
         }
+        /**
+         * tostiong ,equals , hashcode,同时不需要RPC
+         */
+        //如果方法名为toString ,且参数为空
         if ("toString".equals(methodName) && parameterTypes.length == 0) {
             return invoker.toString();
         }
+        //方法为hashcode时
         if ("hashCode".equals(methodName) && parameterTypes.length == 0) {
             return invoker.hashCode();
         }
         if ("equals".equals(methodName) && parameterTypes.length == 1) {
             return invoker.equals(args[0]);
         }
-
+        //进行RPC调用
         return invoker.invoke(createInvocation(method, args)).recreate();
     }
 
     private RpcInvocation createInvocation(Method method, Object[] args) {
+
         RpcInvocation invocation = new RpcInvocation(method, args);
+        //如果方法中含有回调，java 8的结果，
         if (RpcUtils.hasFutureReturnType(method)) {
             invocation.setAttachment(Constants.FUTURE_RETURNTYPE_KEY, "true");
             invocation.setAttachment(Constants.ASYNC_KEY, "true");

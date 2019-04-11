@@ -166,7 +166,8 @@ public class URL extends org.apache.dubbo.common.URL {
     }
 
     @Override
-    public String getBackupAddress(int defaultPort) {
+    public String
+    getBackupAddress(int defaultPort) {
         return super.getBackupAddress(defaultPort);
     }
 

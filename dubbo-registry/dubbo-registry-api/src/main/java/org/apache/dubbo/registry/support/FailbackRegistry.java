@@ -364,9 +364,14 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         super.notify(url, listener, urls);
     }
 
+    /**
+     * 恢复的过程
+     * @throws Exception
+     */
     @Override
     protected void recover() throws Exception {
         // register
+        //注册
         Set<URL> recoverRegistered = new HashSet<URL>(getRegistered());
         if (!recoverRegistered.isEmpty()) {
             if (logger.isInfoEnabled()) {
@@ -376,7 +381,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
                 addFailedRegistered(url);
             }
         }
-        // subscribe
+        // subscribe 订阅
         Map<URL, Set<NotifyListener>> recoverSubscribed = new HashMap<URL, Set<NotifyListener>>(getSubscribed());
         if (!recoverSubscribed.isEmpty()) {
             if (logger.isInfoEnabled()) {

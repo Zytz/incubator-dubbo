@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * JavassistCompiler. (SPI, Singleton, ThreadSafe)
  */
 public class JavassistCompiler extends AbstractCompiler {
-
+    //
     private static final Pattern IMPORT_PATTERN = Pattern.compile("import\\s+([\\w\\.\\*]+);\n");
 
     private static final Pattern EXTENDS_PATTERN = Pattern.compile("\\s+extends\\s+([\\w\\.]+)[^\\{]*\\{\n");
@@ -50,15 +50,19 @@ public class JavassistCompiler extends AbstractCompiler {
     @Override
     public Class<?> doCompile(String name, String source) throws Throwable {
         int i = name.lastIndexOf('.');
+        //获取类名
         String className = i < 0 ? name : name.substring(i + 1);
         ClassPool pool = new ClassPool(true);
         pool.appendClassPath(new LoaderClassPath(ClassHelper.getCallerClassLoader(getClass())));
         Matcher matcher = IMPORT_PATTERN.matcher(source);
         List<String> importPackages = new ArrayList<String>();
         Map<String, String> fullNames = new HashMap<String, String>();
+        //获取包名的位置，com.wenwei.hello.Pool
         while (matcher.find()) {
             String pkg = matcher.group(1);
+            //引用整个包下的类/接口
             if (pkg.endsWith(".*")) {
+
                 String pkgName = pkg.substring(0, pkg.length() - 2);
                 pool.importPackage(pkgName);
                 importPackages.add(pkgName);
@@ -78,6 +82,7 @@ public class JavassistCompiler extends AbstractCompiler {
         if (matcher.find()) {
             String extend = matcher.group(1).trim();
             String extendClass;
+            //是否含有内部类
             if (extend.contains(".")) {
                 extendClass = extend;
             } else if (fullNames.containsKey(extend)) {
@@ -89,6 +94,7 @@ public class JavassistCompiler extends AbstractCompiler {
         } else {
             cls = pool.makeClass(name);
         }
+        //接口部分
         matcher = IMPLEMENTS_PATTERN.matcher(source);
         if (matcher.find()) {
             String[] ifaces = matcher.group(1).trim().split("\\,");
@@ -105,16 +111,18 @@ public class JavassistCompiler extends AbstractCompiler {
                 cls.addInterface(pool.get(ifaceClass));
             }
         }
+       // 获得类中的内容，即首末 {} 的内容。
         String body = source.substring(source.indexOf("{") + 1, source.length() - 1);
         String[] methods = METHODS_PATTERN.split(body);
         for (String method : methods) {
             method = method.trim();
             if (method.length() > 0) {
+                //构造函数
                 if (method.startsWith(className)) {
                     cls.addConstructor(CtNewConstructor.make("public " + method, cls));
                 } else if (FIELD_PATTERN.matcher(method).matches()) {
                     cls.addField(CtField.make("private " + method, cls));
-                } else {
+                } else {//方法
                     cls.addMethod(CtNewMethod.make("public " + method, cls));
                 }
             }

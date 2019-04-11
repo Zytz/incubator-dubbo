@@ -34,6 +34,7 @@ import java.util.regex.Matcher;
 
 /**
  * Wrapper.
+ * 通过wrapper 发送到对应的service中；
  */
 public abstract class Wrapper {
     private static final Map<Class<?>, Wrapper> WRAPPER_MAP = new ConcurrentHashMap<Class<?>, Wrapper>(); //class wrapper map
@@ -104,6 +105,7 @@ public abstract class Wrapper {
      * @return Wrapper instance(not null).
      */
     public static Wrapper getWrapper(Class<?> c) {
+        //不能为静态的类，一直迭代；
         while (ClassGenerator.isDynamicClass(c)) // can not wrapper on dynamic class.
         {
             c = c.getSuperclass();
@@ -122,21 +124,35 @@ public abstract class Wrapper {
     }
 
     private static Wrapper makeWrapper(Class<?> c) {
+        //是否为基本类型
         if (c.isPrimitive()) {
             throw new IllegalArgumentException("Can not create wrapper for primitive type: " + c);
         }
-
+        //类名
         String name = c.getName();
+        //类加载器
         ClassLoader cl = ClassHelper.getClassLoader(c);
-
+        //设置属性 ＃setPropertyValue（o,n,v）
         StringBuilder c1 = new StringBuilder("public void setPropertyValue(Object o, String n, Object v){ ");
+        //获取属性 ＃getPropertyValue(o,n,v)
         StringBuilder c2 = new StringBuilder("public Object getPropertyValue(Object o, String n){ ");
+        //调用方法 invokeMethod
         StringBuilder c3 = new StringBuilder("public Object invokeMethod(Object o, String n, Class[] p, Object[] v) throws " + InvocationTargetException.class.getName() + "{ ");
 
         c1.append(name).append(" w; try{ w = ((").append(name).append(")$1); }catch(Throwable e){ throw new IllegalArgumentException(e); }");
         c2.append(name).append(" w; try{ w = ((").append(name).append(")$1); }catch(Throwable e){ throw new IllegalArgumentException(e); }");
         c3.append(name).append(" w; try{ w = ((").append(name).append(")$1); }catch(Throwable e){ throw new IllegalArgumentException(e); }");
 
+        /**
+         * public void setPropertyValue(Object o,String n , Object v){
+         *     ClassX w ;
+         *     try{
+         *         w = (( ClassX)$1);
+         *     }catch(Throwable e ){
+         *         throw new IllegalArgumentException(e);
+         *     }
+         * }
+         */
         Map<String, Class<?>> pts = new HashMap<>(); // <property name, property types>
         Map<String, Method> ms = new LinkedHashMap<>(); // <method desc, Method instance>
         List<String> mns = new ArrayList<>(); // method names.

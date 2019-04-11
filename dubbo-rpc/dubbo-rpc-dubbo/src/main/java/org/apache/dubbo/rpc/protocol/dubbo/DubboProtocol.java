@@ -61,12 +61,14 @@ import java.util.concurrent.ConcurrentMap;
 public class DubboProtocol extends AbstractProtocol {
 
     public static final String NAME = "dubbo";
-
+    //
     public static final int DEFAULT_PORT = 20880;
     private static final String IS_CALLBACK_SERVICE_INVOKE = "_isCallBackServiceInvoke";
+    //默认dubbo协议
     private static DubboProtocol INSTANCE;
     /**
      * <host:port,Exchanger>
+     *   通信服务器集合
      */
     private final Map<String, ExchangeServer> serverMap = new ConcurrentHashMap<>();
     /**

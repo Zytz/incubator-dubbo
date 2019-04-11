@@ -74,7 +74,7 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {
         this.url = url;
         this.attachment = attachment == null ? null : Collections.unmodifiableMap(attachment);
     }
-
+    //attachment for 传值
     private static Map<String, String> convertAttachment(URL url, String[] keys) {
         if (ArrayUtils.isEmpty(keys)) {
             return null;
@@ -132,6 +132,7 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {
             logger.warn("Invoker for service " + this + " on consumer " + NetUtils.getLocalHost() + " is destroyed, "
                     + ", dubbo version is " + Version.getVersion() + ", this invoker should not be used any longer");
         }
+
         RpcInvocation invocation = (RpcInvocation) inv;
         invocation.setInvoker(this);
         if (attachment != null && attachment.size() > 0) {
