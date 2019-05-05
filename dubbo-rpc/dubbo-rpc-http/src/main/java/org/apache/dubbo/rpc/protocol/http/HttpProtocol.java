@@ -53,9 +53,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HttpProtocol extends AbstractProxyProtocol {
 
     public static final int DEFAULT_PORT = 80;
-
+    //服务器集合
     private final Map<String, HttpServer> serverMap = new ConcurrentHashMap<String, HttpServer>();
-
+    //Spring HttpInvokerServiceExporter 集合
     private final Map<String, HttpInvokerServiceExporter> skeletonMap = new ConcurrentHashMap<String, HttpInvokerServiceExporter>();
 
     private HttpBinder httpBinder;
@@ -75,7 +75,9 @@ public class HttpProtocol extends AbstractProxyProtocol {
 
     @Override
     protected <T> Runnable doExport(final T impl, Class<T> type, URL url) throws RpcException {
+        //获取注册服务器的URL
         String addr = getAddr(url);
+        //获取得到http server对象，如果不存在，则创建；
         HttpServer server = serverMap.get(addr);
         if (server == null) {
             server = httpBinder.bind(url, new InternalHandler());
@@ -95,7 +97,7 @@ public class HttpProtocol extends AbstractProxyProtocol {
             }
         };
     }
-
+    //创建，httpInokerServiceExporter对象
     private <T> HttpInvokerServiceExporter createExporter(T impl, Class<?> type) {
         final HttpInvokerServiceExporter httpServiceExporter = new HttpInvokerServiceExporter();
         httpServiceExporter.setServiceInterface(type);
@@ -200,8 +202,11 @@ public class HttpProtocol extends AbstractProxyProtocol {
         @Override
         public void handle(HttpServletRequest request, HttpServletResponse response)
                 throws IOException, ServletException {
+            //获取服务器的http URL
             String uri = request.getRequestURI();
+            //
             HttpInvokerServiceExporter skeleton = skeletonMap.get(uri);
+            //如果请求不是POST 类型的方法则会报错；
             if (!request.getMethod().equalsIgnoreCase("POST")) {
                 response.setStatus(500);
             } else {

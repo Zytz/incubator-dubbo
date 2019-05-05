@@ -32,33 +32,40 @@ import java.io.IOException;
 public final class DubboCountCodec implements Codec2 {
 
     private DubboCodec codec = new DubboCodec();
-
+    //编码
     @Override
     public void encode(Channel channel, ChannelBuffer buffer, Object msg) throws IOException {
         codec.encode(channel, buffer, msg);
     }
-
+    //解码
     @Override
     public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {
         int save = buffer.readerIndex();
         MultiMessage result = MultiMessage.create();
         do {
+
             Object obj = codec.decode(channel, buffer);
+            //输入不够，需要读进度
             if (Codec2.DecodeResult.NEED_MORE_INPUT == obj) {
                 buffer.readerIndex(save);
                 break;
             } else {
+                //添加结果消息
                 result.addMessage(obj);
+                // 记录消息长度到隐式参数集合，用于 MonitorFilter 监控
                 logMessageLength(obj, buffer.readerIndex() - save);
+                // 记录当前读位置;
                 save = buffer.readerIndex();
             }
         } while (true);
+        //需要更多的读入；
         if (result.isEmpty()) {
             return Codec2.DecodeResult.NEED_MORE_INPUT;
         }
         if (result.size() == 1) {
             return result.get(0);
         }
+        //返回解析得到的数据
         return result;
     }
 
@@ -66,6 +73,7 @@ public final class DubboCountCodec implements Codec2 {
         if (bytes <= 0) {
             return;
         }
+        //请求的类型
         if (result instanceof Request) {
             try {
                 ((RpcInvocation) ((Request) result).getData()).setAttachment(
@@ -73,6 +81,7 @@ public final class DubboCountCodec implements Codec2 {
             } catch (Throwable e) {
                 /* ignore */
             }
+            //返回值的类型
         } else if (result instanceof Response) {
             try {
                 ((RpcResult) ((Response) result).getResult()).setAttachment(

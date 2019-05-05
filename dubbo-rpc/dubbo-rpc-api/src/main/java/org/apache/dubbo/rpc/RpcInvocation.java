@@ -28,6 +28,7 @@ import java.util.Map;
 
 /**
  * RPC Invocation.
+ * 包含着方法名，类，参数，附件
  *
  * @serial Don't change the class name and properties.
  */
@@ -35,6 +36,7 @@ public class RpcInvocation implements Invocation, Serializable {
 
     private static final long serialVersionUID = -4355285085441097045L;
 
+    //
     private String methodName;
 
     private Class<?>[] parameterTypes;

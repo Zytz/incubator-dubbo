@@ -34,7 +34,7 @@ public interface Protocol {
      * @return default port
      */
     int getDefaultPort();
-
+//    执行暴露，并返回取消暴露的回调 Runnable
     /**
      * Export service for remote invocation: <br>
      * 1. Protocol should record request source address after receive a request:
@@ -50,7 +50,7 @@ public interface Protocol {
      */
     @Adaptive
     <T> Exporter<T> export(Invoker<T> invoker) throws RpcException;
-
+    //执行引用，并返回调用远程服务的 Service 对象
     /**
      * Refer a remote service: <br>
      * 1. When user calls `invoke()` method of `Invoker` object which's returned from `refer()` call, the protocol

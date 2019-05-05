@@ -45,7 +45,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class DubboInvoker<T> extends AbstractInvoker<T> {
 
     private final ExchangeClient[] clients;
-
+    //位置
     private final AtomicPositiveInteger index = new AtomicPositiveInteger();
 
     private final String version;
@@ -70,6 +70,7 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
     protected Result doInvoke(final Invocation invocation) throws Throwable {
         RpcInvocation inv = (RpcInvocation) invocation;
         final String methodName = RpcUtils.getMethodName(invocation);
+        //获取到路径以及版本号
         inv.setAttachment(Constants.PATH_KEY, getUrl().getPath());
         inv.setAttachment(Constants.VERSION_KEY, version);
 
@@ -79,16 +80,22 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
         } else {
             currentClient = clients[index.getAndIncrement() % clients.length];
         }
+        //远程调用
         try {
+            //是否异步
             boolean isAsync = RpcUtils.isAsync(getUrl(), invocation);
+            //是否回调
             boolean isAsyncFuture = RpcUtils.isReturnTypeFuture(inv);
+            //是否单向调用
             boolean isOneway = RpcUtils.isOneway(getUrl(), invocation);
+            //获取超时 时间
             int timeout = getUrl().getMethodParameter(methodName, Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
             if (isOneway) {
                 boolean isSent = getUrl().getMethodParameter(methodName, Constants.SENT_KEY, false);
                 currentClient.send(inv, isSent);
                 RpcContext.getContext().setFuture(null);
                 return new RpcResult();
+
             } else if (isAsync) {
                 ResponseFuture future = currentClient.request(inv, timeout);
                 // For compatibility

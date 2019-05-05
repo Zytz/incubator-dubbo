@@ -63,16 +63,20 @@ public class ExchangeCodec extends TelnetCodec {
         return MAGIC;
     }
 
+    //编码
     @Override
     public void encode(Channel channel, ChannelBuffer buffer, Object msg) throws IOException {
+       //如果是请求
         if (msg instanceof Request) {
             encodeRequest(channel, buffer, (Request) msg);
+        //如果是返回值的情况
         } else if (msg instanceof Response) {
             encodeResponse(channel, buffer, (Response) msg);
         } else {
             super.encode(channel, buffer, msg);
         }
     }
+    //解码
 
     @Override
     public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {

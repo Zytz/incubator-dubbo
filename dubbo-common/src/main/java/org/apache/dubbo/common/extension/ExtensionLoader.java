@@ -88,7 +88,7 @@ public class ExtensionLoader<T> {
     // ==============================
     //拓展接口
     private final Class<?> type;
-    //扩展加载的工厂类
+    //扩展加载的工厂类 单例
     private final ExtensionFactory objectFactory;
     //缓存名称
     private final ConcurrentMap<Class<?>, String> cachedNames = new ConcurrentHashMap<Class<?>, String>();
@@ -115,6 +115,7 @@ public class ExtensionLoader<T> {
         return type.isAnnotationPresent(SPI.class);
     }
 
+    //静态工厂；
     @SuppressWarnings("unchecked")
     public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
         if (type == null) {

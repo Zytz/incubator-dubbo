@@ -59,15 +59,18 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {
     public void setProxyFactory(ProxyFactory proxyFactory) {
         this.proxyFactory = proxyFactory;
     }
-
+    //服务暴露
     @Override
     @SuppressWarnings("unchecked")
     public <T> Exporter<T> export(final Invoker<T> invoker) throws RpcException {
+        //获取服务键
         final String uri = serviceKey(invoker.getUrl());
+        //获得 Exporter 对象。若已经暴露，直接返回。
         Exporter<T> exporter = (Exporter<T>) exporterMap.get(uri);
         if (exporter != null) {
             return exporter;
         }
+        //如果没有暴露，则进行服务暴露
         final Runnable runnable = doExport(proxyFactory.getProxy(invoker, true), invoker.getInterface(), invoker.getUrl());
         exporter = new AbstractExporter<T>(invoker) {
             @Override

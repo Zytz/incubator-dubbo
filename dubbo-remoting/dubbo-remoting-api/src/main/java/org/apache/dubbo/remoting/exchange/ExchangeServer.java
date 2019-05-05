@@ -23,6 +23,7 @@ import java.util.Collection;
 
 /**
  * ExchangeServer. (API/SPI, Prototype, ThreadSafe)
+ *
  */
 public interface ExchangeServer extends Server {
 
