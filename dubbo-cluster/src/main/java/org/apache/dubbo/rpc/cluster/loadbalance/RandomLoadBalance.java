@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * random load balance.
+ * random load balance. dubbo 默认的负载均衡的解决方案
  */
 public class RandomLoadBalance extends AbstractLoadBalance {
 

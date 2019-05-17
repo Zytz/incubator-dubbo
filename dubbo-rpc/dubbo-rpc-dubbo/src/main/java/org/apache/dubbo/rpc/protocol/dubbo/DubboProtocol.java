@@ -167,7 +167,7 @@ public class DubboProtocol extends AbstractProtocol {
         }
 
         private Invocation createInvocation(Channel channel, URL url, String methodKey) {
-            /
+            //
             String method = url.getParameter(methodKey);
             if (method == null || method.length() == 0) {
                 return null;

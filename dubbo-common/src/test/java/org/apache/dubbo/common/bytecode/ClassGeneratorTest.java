@@ -28,7 +28,6 @@ interface Builder<T> {
 }
 
 public class ClassGeneratorTest {
-
     @SuppressWarnings("unchecked")
     @Test
     public void testMain() throws Exception {

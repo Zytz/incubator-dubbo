@@ -143,7 +143,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
                     } else {
                         inv = new DecodeableRpcInvocation(channel, req,
                                 new UnsafeByteArrayInputStream(readMessageData(is)), proto);
-                        HeaderExchangeServer  }
+                          }
                     data = inv;
                 }
                 req.setData(data);

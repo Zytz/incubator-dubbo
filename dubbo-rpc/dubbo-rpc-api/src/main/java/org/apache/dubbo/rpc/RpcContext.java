@@ -51,6 +51,7 @@ public class RpcContext {
 
     /**
      * use internal thread local to improve performance
+     * 线程变量
      */
     // FIXME REQUEST_CONTEXT
     private static final InternalThreadLocal<RpcContext> LOCAL = new InternalThreadLocal<RpcContext>() {
@@ -67,11 +68,12 @@ public class RpcContext {
             return new RpcContext();
         }
     };
-    //the temperate for the thread
+    //the temperate for the thread 隐式参数
     private final Map<String, String> attachments = new HashMap<String, String>();
     private final Map<String, Object> values = new HashMap<String, Object>();
+    //请求的future，对象
     private Future<?> future;
-
+    //可调用URL的
     private List<URL> urls;
 
     private URL url;
@@ -81,9 +83,9 @@ public class RpcContext {
     private Class<?>[] parameterTypes;
 
     private Object[] arguments;
-
+    //服务消费者地址
     private InetSocketAddress localAddress;
-
+    //服务提供者地址
     private InetSocketAddress remoteAddress;
     @Deprecated
     private List<Invoker<?>> invokers;

@@ -31,7 +31,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import java.io.IOException;
 import java.util.Map;
 
-@Priority(Integer.MIN_VALUE + 1)
+@Priority(Integer.MIN_VALUE + 1)//排在最前面，但是排在loggingFilter后面
 public class RpcContextFilter implements ContainerRequestFilter, ClientRequestFilter {
 
     private static final String DUBBO_ATTACHMENT_HEADER = "Dubbo-Attachments";
@@ -41,6 +41,7 @@ public class RpcContextFilter implements ContainerRequestFilter, ClientRequestFi
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
+        //新的
         HttpServletRequest request = ResteasyProviderFactory.getContextData(HttpServletRequest.class);
         RpcContext.getContext().setRequest(request);
 
