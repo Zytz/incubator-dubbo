@@ -103,7 +103,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     private static final Map<String, Integer> RANDOM_PORT_MAP = new HashMap<String, Integer>();
 
     /**
-     * A delayed exposure service timer
+     * A delayed exposure service timer 定时执行的线程池执行器
      */
     private static final ScheduledExecutorService delayExportExecutor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("DubboServiceDelayExporter", true));
 
@@ -174,6 +174,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         appendAnnotation(Service.class, service);
     }
 
+    //讲providerconfig 转义称protocolconfig
     @Deprecated
     private static List<ProtocolConfig> convertProviderToProtocol(List<ProviderConfig> providers) {
         if (CollectionUtils.isEmpty(providers)) {
@@ -343,10 +344,11 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (delay != null && delay > 0) {
             delayExportExecutor.schedule(this::doExport, delay, TimeUnit.MILLISECONDS);
         } else {
+            //同步锁机制
             doExport();
         }
     }
-
+    //通过serviceconfig暴露服务；同步锁
     protected synchronized void doExport() {
         if (unexported) {
             throw new IllegalStateException("The service " + interfaceClass.getName() + " has already unexported!");
@@ -398,7 +400,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void doExportUrls() {
-        //远程注册，向注册中心注册
+        //远程注册，向注册中心注册,加载注册中心的配置
         List<URL> registryURLs = loadRegistries(true);
         for (ProtocolConfig protocolConfig : protocols) {
             doExportUrlsFor1Protocol(protocolConfig, registryURLs);
@@ -493,7 +495,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             if (revision != null && revision.length() > 0) {
                 map.put("revision", revision);
             }
-            //包装类
+            //接口的包装类；获取到接口的方法
             String[] methods = Wrapper.getWrapper(interfaceClass).getMethodNames();
             if (methods.length == 0) {
                 logger.warn("No method found in service interface " + interfaceClass.getName());

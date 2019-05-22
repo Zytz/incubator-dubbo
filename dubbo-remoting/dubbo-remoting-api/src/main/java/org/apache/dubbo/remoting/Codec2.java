@@ -23,6 +23,7 @@ import org.apache.dubbo.remoting.buffer.ChannelBuffer;
 
 import java.io.IOException;
 
+//序列化
 @SPI
 public interface Codec2 {
 

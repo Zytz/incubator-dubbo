@@ -389,13 +389,14 @@ public abstract class AbstractConfig implements Serializable {
             return k.substring(0, k.indexOf("."));
         }).collect(Collectors.toSet());
     }
-
+    //提取属性名称
     private static String extractPropertyName(Class<?> clazz, Method setter) throws Exception {
         String propertyName = setter.getName().substring("set".length());
         Method getter = null;
         try {
             getter = clazz.getMethod("get" + propertyName);
         } catch (NoSuchMethodException e) {
+            //设置属性的时候，在dubbo中不要使用is开头的方法；
             getter = clazz.getMethod("is" + propertyName);
         }
         Parameter parameter = getter.getAnnotation(Parameter.class);
@@ -545,6 +546,7 @@ public abstract class AbstractConfig implements Serializable {
             CompositeConfiguration compositeConfiguration = Environment.getInstance().getConfiguration(getPrefix(), getId());
             InmemoryConfiguration config = new InmemoryConfiguration(getPrefix(), getId());
             config.addProperties(getMetaData());
+            //配置中心优先
             if (Environment.getInstance().isConfigCenterFirst()) {
                 // The sequence would be: SystemConfiguration -> ExternalConfiguration -> AppExternalConfiguration -> AbstractConfig -> PropertiesConfiguration
                 compositeConfiguration.addConfiguration(3, config);
@@ -574,6 +576,7 @@ public abstract class AbstractConfig implements Serializable {
             logger.error("Failed to override ", e);
         }
     }
+
 
     @Override
     public String toString() {
@@ -615,9 +618,10 @@ public abstract class AbstractConfig implements Serializable {
     public boolean isValid() {
         return true;
     }
-
+    //是否是元数据的方法；，必须所有的方法都（）
     private boolean isMetaMethod(Method method) {
         String name = method.getName();
+        //只处理get/is开头的方法
         if (!(name.startsWith("get") || name.startsWith("is"))) {
             return false;
         }
@@ -638,13 +642,14 @@ public abstract class AbstractConfig implements Serializable {
         }
         return true;
     }
-
+    //两个配置abstractConfig是否相等的条件
     @Override
     public boolean equals(Object obj) {
+        //两个对象的不为空，且同属于一个类String  instanceOf(obj)
         if (obj == null || !(obj.getClass().getName().equals(this.getClass().getName()))) {
             return false;
         }
-
+        //遍历每个类中每个方法调用的返回值
         Method[] methods = this.getClass().getMethods();
         for (Method method1 : methods) {
             if (ClassHelper.isGetter(method1) && ClassHelper.isPrimitive(method1.getReturnType())) {
@@ -659,7 +664,9 @@ public abstract class AbstractConfig implements Serializable {
                     if ((value1 != null && value2 != null) && !value1.equals(value2)) {
                         return false;
                     }
+
                 } catch (Exception e) {
+                    //todo 确定这样是很好的解决方案吗？
                     return true;
                 }
             }

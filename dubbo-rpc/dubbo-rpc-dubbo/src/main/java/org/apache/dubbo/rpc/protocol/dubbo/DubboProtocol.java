@@ -69,6 +69,7 @@ public class DubboProtocol extends AbstractProtocol {
     /**
      * <host:port,Exchanger>
      * 通信服务器集合
+     * IP :DUBBO PORT
      */
     private final Map<String, ExchangeServer> serverMap = new ConcurrentHashMap<>();
     /**
@@ -83,6 +84,7 @@ public class DubboProtocol extends AbstractProtocol {
      * servicekey-stubmethods
      */
     private final ConcurrentMap<String, String> stubServiceMethodsMap = new ConcurrentHashMap<>();
+    //服务器监听到请求后，由服务端的nettyhandle来处理
     private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() {
 
         @Override
@@ -254,6 +256,8 @@ public class DubboProtocol extends AbstractProtocol {
         return DEFAULT_PORT;
     }
 
+
+    //核心服务，暴露服务
     @Override
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         URL url = invoker.getUrl();
@@ -277,12 +281,13 @@ public class DubboProtocol extends AbstractProtocol {
                 stubServiceMethodsMap.put(url.getServiceKey(), stubServiceMethods);
             }
         }
-
+        //打开服务
         openServer(url);
+        //优化序列化
         optimizeSerialization(url);
         return exporter;
     }
-
+    //单例模式 的实现方式
     private void openServer(URL url) {
         // find server.
         String key = url.getAddress();
@@ -331,7 +336,7 @@ public class DubboProtocol extends AbstractProtocol {
         }
         return server;
     }
-
+    //序列化优化器
     private void optimizeSerialization(URL url) throws RpcException {
         String className = url.getParameter(Constants.OPTIMIZER_KEY, "");
         if (StringUtils.isEmpty(className) || optimizers.contains(className)) {
@@ -341,6 +346,7 @@ public class DubboProtocol extends AbstractProtocol {
         logger.info("Optimizing the serialization process for Kryo, FST, etc...");
 
         try {
+            //获取当前contextloader中的实现；
             Class clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
             if (!SerializationOptimizer.class.isAssignableFrom(clazz)) {
                 throw new RpcException("The serialization optimizer " + className + " isn't an instance of " + SerializationOptimizer.class.getName());

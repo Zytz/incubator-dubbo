@@ -241,7 +241,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         }
         ConfigManager.getInstance().refreshAll();
     }
-
+    //环境预热
     private void prepareEnvironment() {
         if (configCenter.isValid()) {
             if (!configCenter.checkOrUpdateInited()) {
@@ -267,7 +267,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
             }
         }
     }
-
+    //获取动态配置
     private DynamicConfiguration getDynamicConfiguration(URL url) {
         DynamicConfigurationFactory factories = ExtensionLoader
                 .getExtensionLoader(DynamicConfigurationFactory.class)
@@ -293,6 +293,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                 if (StringUtils.isEmpty(address)) {
                     address = Constants.ANYHOST_VALUE;
                 }
+                //是否可以使用注册中心的配置方式
                 if (!RegistryConfig.NO_AVAILABLE.equalsIgnoreCase(address)) {
                     Map<String, String> map = new HashMap<String, String>();
                     appendParameters(map, application);

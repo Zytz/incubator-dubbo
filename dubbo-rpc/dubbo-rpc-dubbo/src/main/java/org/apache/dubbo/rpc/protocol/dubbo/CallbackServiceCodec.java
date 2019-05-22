@@ -241,7 +241,7 @@ class CallbackServiceCodec {
             logger.error(e.getMessage(), e);
         }
     }
-
+    //加密encode invocationargument的参数
     public static Object encodeInvocationArgument(Channel channel, RpcInvocation inv, int paraIndex) throws IOException {
         // get URL directly
         URL url = inv.getInvoker() == null ? null : inv.getInvoker().getUrl();

@@ -41,6 +41,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * DubboInvoker
+ *
+ * serviceconfig ->
+ *
  */
 public class DubboInvoker<T> extends AbstractInvoker<T> {
 

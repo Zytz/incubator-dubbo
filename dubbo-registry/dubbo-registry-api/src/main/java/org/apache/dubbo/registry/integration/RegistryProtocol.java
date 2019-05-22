@@ -161,7 +161,7 @@ public class RegistryProtocol implements Protocol {
     public Map<URL, NotifyListener> getOverrideListeners() {
         return overrideListeners;
     }
-
+    //服务提供者 url注册在注册中心；
     public void register(URL registryUrl, URL registeredProviderUrl) {
         Registry registry = registryFactory.getRegistry(registryUrl);
         registry.register(registeredProviderUrl);
@@ -172,6 +172,7 @@ public class RegistryProtocol implements Protocol {
         registry.unregister(registeredProviderUrl);
     }
 
+    //服务暴露
     @Override
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
         //获取注册中心的URL
@@ -301,7 +302,9 @@ public class RegistryProtocol implements Protocol {
     }
 
     private URL getRegistryUrl(Invoker<?> originInvoker) {
+        //获取到注册中心的URL
         URL registryUrl = originInvoker.getUrl();
+
         if (REGISTRY_PROTOCOL.equals(registryUrl.getProtocol())) {
             String protocol = registryUrl.getParameter(REGISTRY_KEY, DEFAULT_DIRECTORY);
             registryUrl = registryUrl.setProtocol(protocol).removeParameter(REGISTRY_KEY);

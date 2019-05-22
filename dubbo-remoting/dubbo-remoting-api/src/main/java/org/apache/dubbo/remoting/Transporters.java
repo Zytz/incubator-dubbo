@@ -76,6 +76,7 @@ public class Transporters {
     }
 
     public static Transporter getTransporter() {
+        //获取transporter的拓展点
         return ExtensionLoader.getExtensionLoader(Transporter.class).getAdaptiveExtension();
     }
 

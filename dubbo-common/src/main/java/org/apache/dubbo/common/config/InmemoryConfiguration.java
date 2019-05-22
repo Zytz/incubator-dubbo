@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class InmemoryConfiguration extends AbstractPrefixConfiguration {
 
-    // stores the configuration key-value pairs
+    // stores the configuration key-value pairs 暂存在内存当中
     private Map<String, String> store = new LinkedHashMap<>();
 
     public InmemoryConfiguration(String prefix, String id) {
