@@ -17,7 +17,6 @@
 package org.apache.dubbo.common.compiler.support;
 
 import org.apache.dubbo.common.compiler.Compiler;
-import org.apache.dubbo.common.utils.ClassHelper;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,7 +53,7 @@ public abstract class AbstractCompiler implements Compiler {
         //完整 类名
         String className = pkg != null && pkg.length() > 0 ? pkg + "." + cls : cls;
         try {
-            return Class.forName(className, true, ClassHelper.getCallerClassLoader(getClass()));
+            return Class.forName(className, true, org.apache.dubbo.common.utils.ClassUtils.getCallerClassLoader(getClass()));
         } catch (ClassNotFoundException e) {
             if (!code.endsWith("}")) {
                 throw new IllegalStateException("The java code not endsWith \"}\", code: \n" + code + "\n");

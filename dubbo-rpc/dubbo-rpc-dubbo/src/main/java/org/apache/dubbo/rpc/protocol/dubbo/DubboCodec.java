@@ -16,7 +16,6 @@
  */
 package org.apache.dubbo.rpc.protocol.dubbo;
 
-import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.common.Version;
 import org.apache.dubbo.common.io.Bytes;
 import org.apache.dubbo.common.io.UnsafeByteArrayInputStream;
@@ -27,7 +26,6 @@ import org.apache.dubbo.common.serialize.ObjectOutput;
 import org.apache.dubbo.common.utils.ReflectUtils;
 import org.apache.dubbo.common.utils.StringUtils;
 import org.apache.dubbo.remoting.Channel;
-import org.apache.dubbo.remoting.Codec2;
 import org.apache.dubbo.remoting.exchange.Request;
 import org.apache.dubbo.remoting.exchange.Response;
 import org.apache.dubbo.remoting.exchange.codec.ExchangeCodec;
@@ -40,13 +38,19 @@ import org.apache.dubbo.rpc.support.RpcUtils;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static org.apache.dubbo.common.constants.CommonConstants.PATH_KEY;
+import static org.apache.dubbo.common.constants.CommonConstants.VERSION_KEY;
 import static org.apache.dubbo.rpc.protocol.dubbo.CallbackServiceCodec.encodeInvocationArgument;
+import static org.apache.dubbo.rpc.protocol.dubbo.Constants.DECODE_IN_IO_THREAD_KEY;
+import static org.apache.dubbo.rpc.protocol.dubbo.Constants.DEFAULT_DECODE_IN_IO_THREAD;
+import static org.apache.dubbo.common.constants.RpcConstants.DUBBO_VERSION_KEY;
 
 /**
  * Dubbo codec. 编码实现类
  */
-public class DubboCodec extends ExchangeCodec implements Codec2 {
     //协议名
+public class DubboCodec extends ExchangeCodec {
+
     public static final String NAME = "dubbo";
     //协议版本号
     public static final String DUBBO_VERSION = Version.getProtocolVersion();
@@ -77,25 +81,24 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
             // decode response.
             Response res = new Response(id);
             if ((flag & FLAG_EVENT) != 0) {
-                res.setEvent(Response.HEARTBEAT_EVENT);
+                res.setEvent(true);
             }
             // get status.
             byte status = header[3];
             res.setStatus(status);
             try {
                 //获取 序列化对象
-                ObjectInput in = CodecSupport.deserialize(channel.getUrl(), is, proto);
                 if (status == Response.OK) {
                     Object data;
                     if (res.isHeartbeat()) {
+                        ObjectInput in = CodecSupport.deserialize(channel.getUrl(), is, proto);
                         data = decodeHeartbeatData(channel, in);
                     } else if (res.isEvent()) {
+                        ObjectInput in = CodecSupport.deserialize(channel.getUrl(), is, proto);
                         data = decodeEventData(channel, in);
                     } else {
                         DecodeableRpcResult result;
-                        if (channel.getUrl().getParameter(
-                                Constants.DECODE_IN_IO_THREAD_KEY,
-                                Constants.DEFAULT_DECODE_IN_IO_THREAD)) {
+                        if (channel.getUrl().getParameter(DECODE_IN_IO_THREAD_KEY, DEFAULT_DECODE_IN_IO_THREAD)) {
                             result = new DecodeableRpcResult(channel, res, is,
                                     (Invocation) getRequestData(id), proto);
                             result.decode();
@@ -108,6 +111,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
                     }
                     res.setResult(data);
                 } else {
+                    ObjectInput in = CodecSupport.deserialize(channel.getUrl(), is, proto);
                     res.setErrorMessage(in.readUTF());
                 }
             } catch (Throwable t) {
@@ -135,9 +139,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
                     data = decodeEventData(channel, in);
                 } else {
                     DecodeableRpcInvocation inv;
-                    if (channel.getUrl().getParameter(
-                            Constants.DECODE_IN_IO_THREAD_KEY,
-                            Constants.DEFAULT_DECODE_IN_IO_THREAD)) {
+                    if (channel.getUrl().getParameter(DECODE_IN_IO_THREAD_KEY, DEFAULT_DECODE_IN_IO_THREAD)) {
                         inv = new DecodeableRpcInvocation(channel, req, is, proto);
                         inv.decode();
                     } else {
@@ -187,9 +189,10 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
         RpcInvocation inv = (RpcInvocation) data;
         //写入版本号，路径以及
         out.writeUTF(version);
-        out.writeUTF(inv.getAttachment(Constants.PATH_KEY));
-        out.writeUTF(inv.getAttachment(Constants.VERSION_KEY));
         // 写入方法、方法签名、方法参数集合
+        out.writeUTF(inv.getAttachment(PATH_KEY));
+        out.writeUTF(inv.getAttachment(VERSION_KEY));
+
         out.writeUTF(inv.getMethodName());
         out.writeUTF(ReflectUtils.getDesc(inv.getParameterTypes()));
         Object[] args = inv.getArguments();
@@ -223,7 +226,7 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
 
         if (attach) {
             // returns current version of Response to consumer side.
-            result.getAttachments().put(Constants.DUBBO_VERSION_KEY, Version.getProtocolVersion());
+            result.getAttachments().put(DUBBO_VERSION_KEY, Version.getProtocolVersion());
             out.writeObject(result.getAttachments());
         }
     }

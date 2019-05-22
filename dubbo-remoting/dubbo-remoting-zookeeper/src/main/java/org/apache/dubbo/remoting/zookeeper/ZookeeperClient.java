@@ -19,6 +19,7 @@ package org.apache.dubbo.remoting.zookeeper;
 import org.apache.dubbo.common.URL;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public interface ZookeeperClient {
     /**
@@ -49,7 +50,20 @@ public interface ZookeeperClient {
      * 移除节点的监听器
      * @param path 父节点
      * @param listener 移除的特定监听器
+     * @param path:    directory. All of child of path will be listened.
+     * @param listener
      */
+    void addDataListener(String path, DataListener listener);
+
+    /**
+     * @param path:    directory. All of child of path will be listened.
+     * @param listener
+     * @param executor another thread
+     */
+    void addDataListener(String path, DataListener listener, Executor executor);
+
+    void removeDataListener(String path, DataListener listener);
+
     void removeChildListener(String path, ChildListener listener);
 
     /**

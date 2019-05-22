@@ -17,9 +17,9 @@
 
 package org.apache.dubbo.rpc.protocol;
 
-import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.utils.NetUtils;
+import org.apache.dubbo.remoting.Constants;
 import org.apache.dubbo.rpc.Exporter;
 import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Invoker;
@@ -28,7 +28,11 @@ import org.apache.dubbo.rpc.Result;
 import org.apache.dubbo.rpc.RpcException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static org.apache.dubbo.common.constants.CommonConstants.ANYHOST_KEY;
+import static org.apache.dubbo.common.constants.CommonConstants.ANYHOST_VALUE;
 
 /**
  * AbstractProxyProtocol
@@ -68,7 +72,10 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {
         //获得 Exporter 对象。若已经暴露，直接返回。
         Exporter<T> exporter = (Exporter<T>) exporterMap.get(uri);
         if (exporter != null) {
-            return exporter;
+            // When modifying the configuration through override, you need to re-expose the newly modified service.
+            if (Objects.equals(exporter.getInvoker().getUrl(), invoker.getUrl())) {
+                return exporter;
+            }
         }
         //如果没有暴露，则进行服务暴露
         final Runnable runnable = doExport(proxyFactory.getProxy(invoker, true), invoker.getInterface(), invoker.getUrl());
@@ -130,8 +137,8 @@ public abstract class AbstractProxyProtocol extends AbstractProtocol {
 
     protected String getAddr(URL url) {
         String bindIp = url.getParameter(Constants.BIND_IP_KEY, url.getHost());
-        if (url.getParameter(Constants.ANYHOST_KEY, false)) {
-            bindIp = Constants.ANYHOST_VALUE;
+        if (url.getParameter(ANYHOST_KEY, false)) {
+            bindIp = ANYHOST_VALUE;
         }
         return NetUtils.getIpByHost(bindIp) + ":" + url.getParameter(Constants.BIND_PORT_KEY, url.getPort());
     }

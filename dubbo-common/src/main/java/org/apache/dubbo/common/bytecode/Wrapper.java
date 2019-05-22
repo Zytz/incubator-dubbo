@@ -17,6 +17,7 @@
 package org.apache.dubbo.common.bytecode;
 
 import org.apache.dubbo.common.utils.ClassHelper;
+import org.apache.dubbo.common.utils.ClassUtils;
 import org.apache.dubbo.common.utils.ReflectUtils;
 
 import java.lang.reflect.Field;
