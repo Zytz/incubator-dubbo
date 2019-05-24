@@ -41,7 +41,7 @@ import static org.apache.dubbo.common.constants.CommonConstants.TIMEOUT_KEY;
 
 /**
  * Invoke a specific number of invokers concurrently, usually used for demanding real-time operations, but need to waste more service resources.
- *
+ * Forking  并行调用多个服务器
  * <a href="http://en.wikipedia.org/wiki/Fork_(topology)">Fork</a>
  */
 public class ForkingClusterInvoker<T> extends AbstractClusterInvoker<T> {

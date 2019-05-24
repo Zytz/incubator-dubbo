@@ -119,7 +119,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
             }
             return entry.getValue();
         }
-
+        //一致性hash方法；
         private long hash(byte[] digest, int number) {
             return (((long) (digest[3 + number * 4] & 0xFF) << 24)
                     | ((long) (digest[2 + number * 4] & 0xFF) << 16)
@@ -127,7 +127,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
                     | (digest[number * 4] & 0xFF))
                     & 0xFFFFFFFFL;
         }
-
+        //计算md5值
         private byte[] md5(String value) {
             MessageDigest md5;
             try {
@@ -136,6 +136,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
                 throw new IllegalStateException(e.getMessage(), e);
             }
             md5.reset();
+            //
             byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
             md5.update(bytes);
             return md5.digest();

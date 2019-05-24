@@ -40,6 +40,7 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
     
     protected static class WeightedRoundRobin {
         private int weight;
+        //默认为false
         private AtomicLong current = new AtomicLong(0);
         private long lastUpdate;
         public int getWeight() {
@@ -62,8 +63,9 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
             this.lastUpdate = lastUpdate;
         }
     }
-
+    //cache local
     private ConcurrentMap<String, ConcurrentMap<String, WeightedRoundRobin>> methodWeightMap = new ConcurrentHashMap<String, ConcurrentMap<String, WeightedRoundRobin>>();
+    //轮训的乐观锁的解决方案
     private AtomicBoolean updateLock = new AtomicBoolean();
     
     /**
@@ -86,6 +88,7 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
     
     @Override
     protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
+        //
         String key = invokers.get(0).getUrl().getServiceKey() + "." + invocation.getMethodName();
         ConcurrentMap<String, WeightedRoundRobin> map = methodWeightMap.get(key);
         if (map == null) {

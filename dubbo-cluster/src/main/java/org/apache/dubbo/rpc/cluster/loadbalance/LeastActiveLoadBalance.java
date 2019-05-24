@@ -29,6 +29,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * <p>
  * Filter the number of invokers with the least number of active calls and count the weights and quantities of these invokers.
  * If there is only one invoker, use the invoker directly;
+ * //按照服务的活跃数目排序；按照weight 安排请求的比例
  * if there are multiple invokers and the weights are not the same, then random according to the total weight;
  * if there are multiple invokers and the same weight, then randomly called.
  */

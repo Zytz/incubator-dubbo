@@ -40,6 +40,8 @@ import static org.apache.dubbo.rpc.cluster.Constants.RETRIES_KEY;
 /**
  * When invoke fails, log the initial error and retry other invokers (retry n times, which means at most n different invokers will be invoked)
  * Note that retry causes latency.
+ * 失败自动切换
+ * 对于写操作，会导致服务重复，retries次数需要为0
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Failover">Failover</a>
  *
@@ -58,6 +60,7 @@ public class FailoverClusterInvoker<T> extends AbstractClusterInvoker<T> {
         List<Invoker<T>> copyInvokers = invokers;
         checkInvokers(copyInvokers, invocation);
         String methodName = RpcUtils.getMethodName(invocation);
+
         int len = getUrl().getMethodParameter(methodName, RETRIES_KEY, DEFAULT_RETRIES) + 1;
         if (len <= 0) {
             len = 1;
