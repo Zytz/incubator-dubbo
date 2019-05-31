@@ -32,6 +32,9 @@ import java.util.concurrent.ThreadLocalRandom;
  * //按照服务的活跃数目排序；按照weight 安排请求的比例
  * if there are multiple invokers and the weights are not the same, then random according to the total weight;
  * if there are multiple invokers and the same weight, then randomly called.
+ *
+ * 核心思想： 活跃调用数越小，表明该服务提供者效率越高，单位时间内可处理更多的请求
+ * 每次处理之前＋1；处理结束－1
  */
 public class LeastActiveLoadBalance extends AbstractLoadBalance {
 
@@ -41,9 +44,9 @@ public class LeastActiveLoadBalance extends AbstractLoadBalance {
     protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
         // Number of invokers
         int length = invokers.size();
-        // The least active value of all invokers
+        // The least active value of all invokers 最少活跃数
         int leastActive = -1;
-        // The number of invokers having the same least active value (leastActive)
+        // The number of invokers having the same least active value (leastActive) 最少活跃invoker的个数
         int leastCount = 0;
         // The index of invokers having the same least active value (leastActive)
         int[] leastIndexes = new int[length];
@@ -68,6 +71,7 @@ public class LeastActiveLoadBalance extends AbstractLoadBalance {
             weights[i] = afterWarmup;
             // If it is the first invoker or the active number of the invoker is less than the current least active number
             if (leastActive == -1 || active < leastActive) {
+                //第一次调用，以及
                 // Reset the active number of the current invoker to the least active number
                 leastActive = active;
                 // Reset the number of least active invokers
@@ -101,6 +105,7 @@ public class LeastActiveLoadBalance extends AbstractLoadBalance {
         if (!sameWeight && totalWeight > 0) {
             // If (not every invoker has the same weight & at least one invoker's weight>0), select randomly based on 
             // totalWeight.
+            //找到最低的哪些，然后叠加；
             int offsetWeight = ThreadLocalRandom.current().nextInt(totalWeight);
             // Return a invoker based on the random value.
             for (int i = 0; i < leastCount; i++) {

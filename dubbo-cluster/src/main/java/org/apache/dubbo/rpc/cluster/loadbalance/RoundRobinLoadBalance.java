@@ -32,6 +32,23 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Round robin load balance.轮训的解决方案
+ *
+ * 举个例子，我们有三台服务器 A、B、C。我们将第一个请求分配给服务器 A，第二个请求分配给服务器 B，第三个请求分配给服务器 C，第四个请求再次分配给服务器 A。这个过程就叫做轮询。
+ * 轮询是一种无状态负载均衡算法，实现简单，适用于每台服务器性能相近的场景下。
+ * 但现实情况下，我们并不能保证每台服务器性能均相近。如果我们将等量的请求分配给性能较差的服务器，这显然是不合理的。
+ * 因此，这个时候我们需要对轮询过程进行加权
+ * smooth robin load balance
+ * currentweight进行累加
+ * 请求编号	currentWeight 数组	选择结果	减去权重总和后的 currentWeight 数组
+ * 1	[5, 1, 1]	A	[-2, 1, 1]
+ * 2	[3, 2, 2]	A	[-4, 2, 2]
+ * 3	[1, 3, 3]	B	[1, -4, 3]
+ * 4	[6, -3, 4]	A	[-1, -3, 4]
+ * 5	[4, -2, 5]	C	[4, -2, -2]
+ * 6	[9, -1, -1]	A	[2, -1, -1]
+ * 7	[7, 0, 0]	A	[0, 0, 0]
+ *
+ *
  */
 public class RoundRobinLoadBalance extends AbstractLoadBalance {
     public static final String NAME = "roundrobin";
@@ -50,9 +67,11 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
             this.weight = weight;
             current.set(0);
         }
+        //经过一次选择之后，每个节点都需要进行一次addAddGet的
         public long increaseCurrent() {
             return current.addAndGet(weight);
         }
+        //平滑权重轮训算法，很重要一点就是每次选中的节点都需要 减total的操作
         public void sel(int total) {
             current.addAndGet(-1 * total);
         }
@@ -63,7 +82,7 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
             this.lastUpdate = lastUpdate;
         }
     }
-    //cache local
+    //cache local  维护一个权重  map key
     private ConcurrentMap<String, ConcurrentMap<String, WeightedRoundRobin>> methodWeightMap = new ConcurrentHashMap<String, ConcurrentMap<String, WeightedRoundRobin>>();
     //轮训的乐观锁的解决方案
     private AtomicBoolean updateLock = new AtomicBoolean();
@@ -92,6 +111,7 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
         String key = invokers.get(0).getUrl().getServiceKey() + "." + invocation.getMethodName();
         ConcurrentMap<String, WeightedRoundRobin> map = methodWeightMap.get(key);
         if (map == null) {
+
             methodWeightMap.putIfAbsent(key, new ConcurrentHashMap<String, WeightedRoundRobin>());
             map = methodWeightMap.get(key);
         }
@@ -102,7 +122,9 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
         WeightedRoundRobin selectedWRR = null;
         for (Invoker<T> invoker : invokers) {
             String identifyString = invoker.getUrl().toIdentityString();
+
             WeightedRoundRobin weightedRoundRobin = map.get(identifyString);
+            //当前invoke对应的权重
             int weight = getWeight(invoker, invocation);
 
             if (weightedRoundRobin == null) {
@@ -121,6 +143,7 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
                 selectedInvoker = invoker;
                 selectedWRR = weightedRoundRobin;
             }
+            //计算weight总和
             totalWeight += weight;
         }
         if (!updateLock.get() && invokers.size() != map.size()) {
@@ -142,6 +165,7 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
                 }
             }
         }
+        //被选中的几点需要进行一次sel操作
         if (selectedInvoker != null) {
             selectedWRR.sel(totalWeight);
             return selectedInvoker;
