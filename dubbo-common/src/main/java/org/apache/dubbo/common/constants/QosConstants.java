@@ -18,30 +18,13 @@
 package org.apache.dubbo.common.constants;
 
 /**
- * RpcConstants
+ * QosConstants
  */
-public interface RpcConstants {
+public interface QosConstants {
 
-    String INPUT_KEY = "input";
+    String QOS_ENABLE = "qos-enable";
 
-    String OUTPUT_KEY = "output";
+    String QOS_PORT = "qos-port";
 
-    /**
-     * The limit of callback service instances for one interface on every client
-     */
-    String CALLBACK_INSTANCES_LIMIT_KEY = "callbacks";
-
-    /**
-     * The default limit number for callback service instances
-     *
-     * @see #CALLBACK_INSTANCES_LIMIT_KEY
-     */
-    int DEFAULT_CALLBACK_INSTANCES = 1;
-
-    String DUBBO_VERSION_KEY = "dubbo";
-
-    String $INVOKE = "$invoke";
-
-    String CONNECTIONS_KEY = "connections";
-
+    String ACCEPT_FOREIGN_IP = "qos-accept-foreign-ip";
 }

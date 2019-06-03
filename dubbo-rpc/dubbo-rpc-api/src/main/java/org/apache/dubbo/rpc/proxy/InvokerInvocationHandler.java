@@ -20,13 +20,9 @@ import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 import org.apache.dubbo.rpc.Invoker;
 import org.apache.dubbo.rpc.RpcInvocation;
-import org.apache.dubbo.rpc.support.RpcUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-
-import static org.apache.dubbo.rpc.Constants.ASYNC_KEY;
-import static org.apache.dubbo.rpc.Constants.FUTURE_RETURNTYPE_KEY;
 
 /**
  * InvokerHandler
@@ -63,19 +59,22 @@ public class InvokerInvocationHandler implements InvocationHandler {
         if ("equals".equals(methodName) && parameterTypes.length == 1) {
             return invoker.equals(args[0]);
         }
-        //进行RPC调用
-        return invoker.invoke(createInvocation(method, args)).recreate();
+//        //进行RPC调用
+//        return invoker.invoke(createInvocation(method, args)).recreate();
+//    }
+//
+//    private RpcInvocation createInvocation(Method method, Object[] args) {
+//
+//        RpcInvocation invocation = new RpcInvocation(method, args);
+//        //如果方法中含有回调，java 8的结果，
+//        if (RpcUtils.hasFutureReturnType(method)) {
+//            invocation.setAttachment(FUTURE_RETURNTYPE_KEY, "true");
+//            invocation.setAttachment(ASYNC_KEY, "true");
+//        }
+//        return invocation;
+//    }
+
+
+        return invoker.invoke(new RpcInvocation(method, args)).recreate();
     }
-
-    private RpcInvocation createInvocation(Method method, Object[] args) {
-
-        RpcInvocation invocation = new RpcInvocation(method, args);
-        //如果方法中含有回调，java 8的结果，
-        if (RpcUtils.hasFutureReturnType(method)) {
-            invocation.setAttachment(FUTURE_RETURNTYPE_KEY, "true");
-            invocation.setAttachment(ASYNC_KEY, "true");
-        }
-        return invocation;
-    }
-
 }

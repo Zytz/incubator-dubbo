@@ -14,12 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.dubbo.registry.multiple;
 
-package com.alibaba.dubbo.remoting.exchange;
+import org.apache.dubbo.common.URL;
+import org.apache.dubbo.registry.Registry;
+import org.apache.dubbo.registry.support.AbstractRegistryFactory;
 
 /**
- * 2019-04-18
+ * MultipleRegistryFactory
  */
-@Deprecated
-public interface ResponseCallback extends org.apache.dubbo.remoting.exchange.ResponseCallback {
+public class MultipleRegistryFactory extends AbstractRegistryFactory {
+
+    @Override
+    protected Registry createRegistry(URL url) {
+        return new MultipleRegistry(url);
+    }
+
 }

@@ -14,35 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.apache.dubbo.common.constants;
+package org.apache.dubbo.rpc;
 
 /**
- * ConfigConstants
+ *
  */
-public interface ConfigConstants {
-    String CLUSTER_KEY = "cluster";
+public abstract class ListenableFilter implements Filter {
 
-    String USERNAME_KEY = "username";
+    protected Listener listener = null;
 
-    String PASSWORD_KEY = "password";
-
-    String HOST_KEY = "host";
-
-    String PORT_KEY = "port";
-
-    String DUBBO_IP_TO_BIND = "DUBBO_IP_TO_BIND";
-
-    @Deprecated
-    String SHUTDOWN_WAIT_SECONDS_KEY = "dubbo.service.shutdown.wait.seconds";
-
-    String SHUTDOWN_WAIT_KEY = "dubbo.service.shutdown.wait";
-
-    String DUBBO_PROTOCOL = "dubbo";
-
-    String QOS_ENABLE = "qos.enable";
-
-    String QOS_PORT = "qos.port";
-
-    String ACCEPT_FOREIGN_IP = "qos.accept.foreign.ip";
+    public Listener listener() {
+        return listener;
+    }
 }
