@@ -15,15 +15,22 @@
  * limitations under the License.
  */
 
-package com.alibaba.dubbo.rpc.protocol.dubbo;
+package org.apache.dubbo.remoting.utils;
 
-import org.apache.dubbo.remoting.exchange.ResponseFuture;
+import org.apache.dubbo.common.URL;
+import org.apache.dubbo.remoting.Constants;
 
-/**
- * 2019-04-18
- */
-public class FutureAdapter<V> extends org.apache.dubbo.rpc.protocol.dubbo.FutureAdapter<V> {
-    public FutureAdapter(ResponseFuture future) {
-        super(future);
+public class UrlUtils {
+    public static int getIdleTimeout(URL url) {
+        int heartBeat = getHeartbeat(url);
+        int idleTimeout = url.getParameter(Constants.HEARTBEAT_TIMEOUT_KEY, heartBeat * 3);
+        if (idleTimeout < heartBeat * 2) {
+            throw new IllegalStateException("idleTimeout < heartbeatInterval * 2");
+        }
+        return idleTimeout;
+    }
+
+    public static int getHeartbeat(URL url) {
+        return url.getParameter(Constants.HEARTBEAT_KEY, Constants.DEFAULT_HEARTBEAT);
     }
 }
