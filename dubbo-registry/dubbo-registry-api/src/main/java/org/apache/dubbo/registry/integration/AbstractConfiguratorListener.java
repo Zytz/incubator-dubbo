@@ -32,6 +32,8 @@ import java.util.List;
 
 /**
  * AbstractConfiguratorListener
+ * 观察者模式
+ *
  */
 public abstract class AbstractConfiguratorListener implements ConfigurationListener {
     private static final Logger logger = LoggerFactory.getLogger(AbstractConfiguratorListener.class);

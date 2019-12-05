@@ -48,7 +48,6 @@ import static org.apache.dubbo.rpc.Constants.ASYNC_KEY;
 import static org.apache.dubbo.rpc.Constants.MERGER_KEY;
 
 /**
-<<<<<<< HEAD
  * 合并调用
  * @param <T>
  */

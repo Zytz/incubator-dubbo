@@ -22,6 +22,7 @@ import org.apache.dubbo.common.extension.ExtensionLoader;
 
 /**
  * AdaptiveCompiler. (SPI, Singleton, ThreadSafe)
+ *多种编译器，一种是基于JDK 以及基于java sisit的方式
  */
 @Adaptive
 public class AdaptiveCompiler implements Compiler {

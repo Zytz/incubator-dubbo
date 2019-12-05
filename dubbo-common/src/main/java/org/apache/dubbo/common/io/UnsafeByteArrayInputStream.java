@@ -21,6 +21,7 @@ import java.io.InputStream;
 
 /**
  * UnsafeByteArrayInputStream.
+ * 类似除sun中unsafe类，直接操作inputstream,写到外部内存中；
  */
 public class UnsafeByteArrayInputStream extends InputStream {
     protected byte[] mData;
@@ -54,6 +55,7 @@ public class UnsafeByteArrayInputStream extends InputStream {
         if (off < 0 || len < 0 || len > b.length - off) {
             throw new IndexOutOfBoundsException();
         }
+        //越界了
         if (mPosition >= mLimit) {
             return -1;
         }

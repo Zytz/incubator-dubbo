@@ -84,7 +84,7 @@ import static org.apache.dubbo.common.constants.RegistryConstants.ROUTE_PROTOCOL
 
 
 /**
- * RegistryDirectory
+ * RegistryDirectory fu
  */
 public class RegistryDirectory<T> extends AbstractDirectory<T> implements NotifyListener {
 

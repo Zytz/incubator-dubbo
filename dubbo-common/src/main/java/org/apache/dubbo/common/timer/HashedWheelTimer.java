@@ -76,12 +76,17 @@ import java.util.concurrent.atomic.AtomicLong;
  * and Hierarchical Timing Wheels: data structures to efficiently implement a
  * timer facility'</a>.  More comprehensive slides are located
  * <a href="http://www.cse.wustl.edu/~cdgill/courses/cs6874/TimingWheels.ppt">here</a>.
+ * dubbo定时器的管理实现解决方案：
+ *
+ * 。在Dubbo最开始的实现中，是采用将所有的返回结果（DefaultFuture）都放入一个集合中，并且通过一个定时任务，
+ * 每隔一定时间间隔就扫描所有的future，逐个判断是否超时。
  */
 public class HashedWheelTimer implements Timer {
 
     /**
      * may be in spi?
      */
+
     public static final String NAME = "hased";
 
     private static final Logger logger = LoggerFactory.getLogger(HashedWheelTimer.class);
@@ -106,9 +111,11 @@ public class HashedWheelTimer implements Timer {
     private volatile int workerState;
 
     private final long tickDuration;
+    //双向环的基础构建模块
     private final HashedWheelBucket[] wheel;
     private final int mask;
     private final CountDownLatch startTimeInitialized = new CountDownLatch(1);
+    //
     private final Queue<HashedWheelTimeout> timeouts = new LinkedBlockingQueue<>();
     private final Queue<HashedWheelTimeout> cancelledTimeouts = new LinkedBlockingQueue<>();
     private final AtomicLong pendingTimeouts = new AtomicLong(0);
@@ -288,9 +295,10 @@ public class HashedWheelTimer implements Timer {
         }
         return wheel;
     }
-
+    //标准化数据 ，比如9，则标准化为16，17则标准化为32，34则标准化为64
     private static int normalizeTicksPerWheel(int ticksPerWheel) {
         int normalizedTicksPerWheel = ticksPerWheel - 1;
+        //标准化移动的位置 抑或之后相加
         normalizedTicksPerWheel |= normalizedTicksPerWheel >>> 1;
         normalizedTicksPerWheel |= normalizedTicksPerWheel >>> 2;
         normalizedTicksPerWheel |= normalizedTicksPerWheel >>> 4;
@@ -466,7 +474,7 @@ public class HashedWheelTimer implements Timer {
             }
             processCancelledTasks();
         }
-
+        //将所有的超时node,放在bucket中
         private void transferTimeoutsToBuckets() {
             // transfer only max. 100000 timeouts per tick to prevent a thread to stale the workerThread when it just
             // adds new timeouts in a loop.
@@ -492,7 +500,7 @@ public class HashedWheelTimer implements Timer {
                 bucket.addTimeout(timeout);
             }
         }
-
+        //处理任务取消的任务；
         private void processCancelledTasks() {
             for (; ; ) {
                 HashedWheelTimeout timeout = cancelledTimeouts.poll();
@@ -517,6 +525,7 @@ public class HashedWheelTimer implements Timer {
          * @return Long.MIN_VALUE if received a shutdown request,
          * current time otherwise (with Long.MIN_VALUE changed by +1)
          */
+        //等待下一个时钟 时间
         private long waitForNextTick() {
             long deadline = tickDuration * (tick + 1);
 
@@ -549,17 +558,20 @@ public class HashedWheelTimer implements Timer {
             return Collections.unmodifiableSet(unprocessedTimeouts);
         }
     }
-
+    //定时器，是一个双向列表基础NODE类
     private static final class HashedWheelTimeout implements Timeout {
-
+        //每个区块（NODE）的状态，其中包括三种，0 为初始化，1为取消中，2 为过时
         private static final int ST_INIT = 0;
         private static final int ST_CANCELLED = 1;
         private static final int ST_EXPIRED = 2;
+        //每个区块的状态；
         private static final AtomicIntegerFieldUpdater<HashedWheelTimeout> STATE_UPDATER =
                 AtomicIntegerFieldUpdater.newUpdater(HashedWheelTimeout.class, "state");
 
         private final HashedWheelTimer timer;
+        //定时任务
         private final TimerTask task;
+        //任务截止时间
         private final long deadline;
 
         @SuppressWarnings({"unused", "FieldMayBeFinal", "RedundantFieldInitialization"})
@@ -572,6 +584,7 @@ public class HashedWheelTimer implements Timer {
         long remainingRounds;
 
         /**
+         * 双向链表
          * This will be used to chain timeouts in HashedWheelTimerBucket via a double-linked-list.
          * As only the workerThread will act on it there is no need for synchronization / volatile.
          */
@@ -580,6 +593,7 @@ public class HashedWheelTimer implements Timer {
 
         /**
          * The bucket to which the timeout was added
+         * which store the hashedWheelTimeout
          */
         HashedWheelBucket bucket;
 
@@ -699,10 +713,12 @@ public class HashedWheelTimer implements Timer {
 
         /**
          * Add {@link HashedWheelTimeout} to this bucket.
+         * 双向列表的增加
          */
         void addTimeout(HashedWheelTimeout timeout) {
             assert timeout.bucket == null;
             timeout.bucket = this;
+            //如果列表为空
             if (head == null) {
                 head = tail = timeout;
             } else {
@@ -740,6 +756,7 @@ public class HashedWheelTimer implements Timer {
         }
 
         public HashedWheelTimeout remove(HashedWheelTimeout timeout) {
+
             HashedWheelTimeout next = timeout.next;
             // remove timeout that was either processed or cancelled by updating the linked-list
             if (timeout.prev != null) {
@@ -781,6 +798,7 @@ public class HashedWheelTimer implements Timer {
                 if (timeout.isExpired() || timeout.isCancelled()) {
                     continue;
                 }
+                //考虑所有timeout的情况
                 set.add(timeout);
             }
         }

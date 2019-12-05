@@ -30,6 +30,8 @@ import org.apache.dubbo.common.utils.StringUtils;
 
 /**
  * Code generator for Adaptive class
+ *
+ * adaptiveclass的生成器；
  */
 public class AdaptiveClassCodeGenerator {
     

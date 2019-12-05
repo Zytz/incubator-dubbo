@@ -39,7 +39,7 @@ public class DecodeHandler extends AbstractChannelHandlerDelegate {
         if (message instanceof Decodeable) {
             decode(message);
         }
-
+        //如果是request，则 将信息加密
         if (message instanceof Request) {
             decode(((Request) message).getData());
         }

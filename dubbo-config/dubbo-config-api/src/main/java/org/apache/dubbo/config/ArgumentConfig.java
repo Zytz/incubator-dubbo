@@ -42,6 +42,7 @@ public class ArgumentConfig implements Serializable {
 
     /**
      * Whether the argument is the callback interface
+     * 是否为 回调类型
      */
     private Boolean callback;
 

@@ -55,15 +55,15 @@ import java.util.Set;
 public class JdkCompiler extends AbstractCompiler {
 
     private final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-
+    //  收集该方法的诊断结果
     private final DiagnosticCollector<JavaFileObject> diagnosticCollector = new DiagnosticCollector<JavaFileObject>();
-
+    //方法的实现方式
     private final ClassLoaderImpl classLoader;
-
+    // url 以及java class实现器
     private final JavaFileManagerImpl javaFileManager;
 
     private volatile List<String> options;
-
+    //默认是JDK1.6以上的JDK compile
     public JdkCompiler() {
         options = new ArrayList<String>();
         options.add("-source");
@@ -71,7 +71,9 @@ public class JdkCompiler extends AbstractCompiler {
         options.add("-target");
         options.add("1.6");
         StandardJavaFileManager manager = compiler.getStandardFileManager(diagnosticCollector, null, null);
+        //破坏双亲委托机制的一种方式，从当前的thread获取到classloader
         final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        //如果不是系统的app bootclassloader
         if (loader instanceof URLClassLoader
                 && (!loader.getClass().getName().equals("sun.misc.Launcher$AppClassLoader"))) {
             try {
@@ -93,13 +95,15 @@ public class JdkCompiler extends AbstractCompiler {
         });
         javaFileManager = new JavaFileManagerImpl(manager, classLoader);
     }
-
+    //
     @Override
     public Class<?> doCompile(String name, String sourceCode) throws Throwable {
         int i = name.lastIndexOf('.');
         String packageName = i < 0 ? "" : name.substring(0, i);
         String className = i < 0 ? name : name.substring(i + 1);
+        //理解底层实现 jdk编译的实现逻辑 ，先构建classname,和URL 之间的mapping关系（javaFileObject）
         JavaFileObjectImpl javaFileObject = new JavaFileObjectImpl(className, sourceCode);
+        //path,classname,javafileobject;packagename,
         javaFileManager.putFileForInput(StandardLocation.SOURCE_PATH, packageName,
                 className + ClassUtils.JAVA_EXTENSION, javaFileObject);
         Boolean result = compiler.getTask(null, javaFileManager, diagnosticCollector, options,
@@ -107,6 +111,7 @@ public class JdkCompiler extends AbstractCompiler {
         if (result == null || !result) {
             throw new IllegalStateException("Compilation failed. class: " + name + ", diagnostics: " + diagnosticCollector);
         }
+        //最后通过loadclass,使用默认的双亲委托机制完成；
         return classLoader.loadClass(name);
     }
 
@@ -152,11 +157,11 @@ public class JdkCompiler extends AbstractCompiler {
             return bytecode.toByteArray();
         }
     }
-
+//打破java 文件的load 的规则；
     private static final class JavaFileManagerImpl extends ForwardingJavaFileManager<JavaFileManager> {
 
         private final ClassLoaderImpl classLoader;
-
+        //URL  以及java file之间的mapping关系；
         private final Map<URI, JavaFileObject> fileObjects = new HashMap<URI, JavaFileObject>();
 
         public JavaFileManagerImpl(JavaFileManager fileManager, ClassLoaderImpl classLoader) {
@@ -241,7 +246,7 @@ public class JdkCompiler extends AbstractCompiler {
     }
 
     private final class ClassLoaderImpl extends ClassLoader {
-
+        //class name 以及javaFileObject的之间关系
         private final Map<String, JavaFileObject> classes = new HashMap<String, JavaFileObject>();
 
         ClassLoaderImpl(final ClassLoader parentClassLoader) {
@@ -252,6 +257,7 @@ public class JdkCompiler extends AbstractCompiler {
             return Collections.unmodifiableCollection(classes.values());
         }
 
+        //通过特定的classname获取到对应的Class/;通过实现findClass的方式
         @Override
         protected Class<?> findClass(final String qualifiedClassName) throws ClassNotFoundException {
             JavaFileObject file = classes.get(qualifiedClassName);
@@ -265,7 +271,7 @@ public class JdkCompiler extends AbstractCompiler {
                 return super.findClass(qualifiedClassName);
             }
         }
-
+       //增加class name以及java file extension之间的关系
         void add(final String qualifiedClassName, final JavaFileObject javaFile) {
             classes.put(qualifiedClassName, javaFile);
         }
@@ -277,6 +283,7 @@ public class JdkCompiler extends AbstractCompiler {
 
         @Override
         public InputStream getResourceAsStream(final String name) {
+            //判断文件是是否为class编译好的文件；
             if (name.endsWith(ClassUtils.CLASS_EXTENSION)) {
                 String qualifiedClassName = name.substring(0, name.length() - ClassUtils.CLASS_EXTENSION.length()).replace('/', '.');
                 JavaFileObjectImpl file = (JavaFileObjectImpl) classes.get(qualifiedClassName);

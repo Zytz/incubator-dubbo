@@ -57,6 +57,7 @@ public class Bytes {
      */
     public static byte[] copyOf(byte[] src, int length) {
         byte[] dest = new byte[length];
+        //system copy 核心区块
         System.arraycopy(src, 0, dest, 0, Math.min(src.length, length));
         return dest;
     }

@@ -16,7 +16,7 @@
  */
 
 package org.apache.dubbo.common.constants;
-
+//注册中心的常量设置
 public interface RegistryConstants {
 
     String REGISTRY_KEY = "registry";

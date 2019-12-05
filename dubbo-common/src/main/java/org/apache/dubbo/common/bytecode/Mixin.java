@@ -27,6 +27,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Mixin
+ * that provided the option implement for the inteface ;
+ *
  */
 public abstract class Mixin {
     private static final String PACKAGE_NAME = Mixin.class.getPackage().getName();

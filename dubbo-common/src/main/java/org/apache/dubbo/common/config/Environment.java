@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * TODO load as SPI will be better?
+ * 系统环境中各种内外属性的书写
  */
 public class Environment {
     private static final Environment INSTANCE = new Environment();
@@ -147,7 +148,7 @@ public class Environment {
         }
         return CommonConstants.DUBBO;
     }
-
+    //是否是配置中心的解决
     public boolean isConfigCenterFirst() {
         return configCenterFirst;
     }

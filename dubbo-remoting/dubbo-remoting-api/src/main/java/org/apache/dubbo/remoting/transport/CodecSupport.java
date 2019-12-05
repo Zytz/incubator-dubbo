@@ -34,7 +34,7 @@ import java.util.Set;
 import static org.apache.dubbo.common.serialize.Constants.COMPACTED_JAVA_SERIALIZATION_ID;
 import static org.apache.dubbo.common.serialize.Constants.JAVA_SERIALIZATION_ID;
 import static org.apache.dubbo.common.serialize.Constants.NATIVE_JAVA_SERIALIZATION_ID;
-
+//加密 解密 的核心模块
 public class CodecSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(CodecSupport.class);
@@ -64,7 +64,7 @@ public class CodecSupport {
     public static Serialization getSerializationById(Byte id) {
         return ID_SERIALIZATION_MAP.get(id);
     }
-
+    //default serialization tools hessian2
     public static Serialization getSerialization(URL url) {
         return ExtensionLoader.getExtensionLoader(Serialization.class).getExtension(
                 url.getParameter(Constants.SERIALIZATION_KEY, Constants.DEFAULT_REMOTING_SERIALIZATION));

@@ -46,6 +46,7 @@ import static org.apache.dubbo.configcenter.Constants.CONFIG_NAMESPACE_KEY;
 /**
  * The etcd implementation of {@link DynamicConfiguration}
  */
+//配置中心ETCD
 public class EtcdDynamicConfiguration implements DynamicConfiguration {
 
     /**

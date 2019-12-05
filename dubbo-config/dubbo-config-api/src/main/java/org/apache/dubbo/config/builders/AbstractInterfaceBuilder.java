@@ -58,6 +58,7 @@ public abstract class AbstractInterfaceBuilder<T extends AbstractInterfaceConfig
 
     /**
      * Cluster type
+     * 集群方式：
      */
     protected String cluster;
 

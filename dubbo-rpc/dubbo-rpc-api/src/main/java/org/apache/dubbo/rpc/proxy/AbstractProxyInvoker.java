@@ -81,7 +81,6 @@ public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
 
     @Override
     public Result invoke(Invocation invocation) throws RpcException {
-//<<<<<<< HEAD
 //        //the context handle the state for thread
 //        RpcContext rpcContext = RpcContext.getContext();
 //        try {
@@ -95,7 +94,6 @@ public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
 //            } else {
 //                return new RpcResult(obj);
 //            }
-//=======
         try {
             Object value = doInvoke(proxy, invocation.getMethodName(), invocation.getParameterTypes(), invocation.getArguments());
             CompletableFuture<Object> future = wrapWithFuture(value, invocation);

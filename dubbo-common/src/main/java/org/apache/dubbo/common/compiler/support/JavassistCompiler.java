@@ -43,22 +43,23 @@ public class JavassistCompiler extends AbstractCompiler {
         CtClassBuilder builder = new CtClassBuilder();
         builder.setClassName(name);
 
-        // process imported classes
+        // process imported classes import部分
         Matcher matcher = IMPORT_PATTERN.matcher(source);
         while (matcher.find()) {
             builder.addImports(matcher.group(1).trim());
         }
 
-        // process extended super class
+        // process extended super class 继承
         matcher = EXTENDS_PATTERN.matcher(source);
         if (matcher.find()) {
             builder.setSuperClassName(matcher.group(1).trim());
         }
 
-        // process implemented interfaces
+        // process implemented interfaces //接口
         matcher = IMPLEMENTS_PATTERN.matcher(source);
         if (matcher.find()) {
             String[] ifaces = matcher.group(1).trim().split("\\,");
+            //构造者模式 ，逐个加入
             Arrays.stream(ifaces).forEach(i -> builder.addInterface(i.trim()));
         }
 
@@ -67,8 +68,10 @@ public class JavassistCompiler extends AbstractCompiler {
         String[] methods = METHODS_PATTERN.split(body);
         String className = ClassUtils.getSimpleClassName(name);
         Arrays.stream(methods).map(String::trim).filter(m -> !m.isEmpty()).forEach(method -> {
+            //如果体内是一个公有的构造器
             if (method.startsWith(className)) {
                 builder.addConstructor("public " + method);
+                //是否是公有的函数
             } else if (FIELD_PATTERN.matcher(method).matches()) {
                 builder.addField("private " + method);
             } else {
@@ -76,7 +79,7 @@ public class JavassistCompiler extends AbstractCompiler {
             }
         });
 
-        // compile
+        // compile 默认是 java sist的编译方式
         ClassLoader classLoader = org.apache.dubbo.common.utils.ClassUtils.getCallerClassLoader(getClass());
         CtClass cls = builder.build(classLoader);
         return cls.toClass(classLoader, JavassistCompiler.class.getProtectionDomain());

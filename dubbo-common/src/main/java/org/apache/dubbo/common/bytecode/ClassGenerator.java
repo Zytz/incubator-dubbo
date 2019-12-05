@@ -47,6 +47,8 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * ClassGenerator 基于javassist的class 生成器
  * 能够通过classname,method,生成对应的方法；
+ *
+ *  1:通过CtClass 以及classPool的方式生成class；
  */
 public final class ClassGenerator {
 

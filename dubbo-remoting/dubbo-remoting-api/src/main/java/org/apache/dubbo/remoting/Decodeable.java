@@ -16,7 +16,7 @@
  */
 
 package org.apache.dubbo.remoting;
-
+//有加密的能力
 public interface Decodeable {
 
     public void decode() throws Exception;

@@ -140,6 +140,7 @@ public class DubboCodec extends ExchangeCodec {
                 } else {
                     DecodeableRpcInvocation inv;
                     if (channel.getUrl().getParameter(DECODE_IN_IO_THREAD_KEY, DEFAULT_DECODE_IN_IO_THREAD)) {
+                        //decode the channel ,req
                         inv = new DecodeableRpcInvocation(channel, req, is, proto);
                         inv.decode();
                     } else {

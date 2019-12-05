@@ -48,7 +48,7 @@ import static org.apache.dubbo.rpc.Constants.TOKEN_KEY;
 
 /**
  * DubboInvoker
- *
+ * 同步转异步的核心代码
  * serviceconfig ->
  *
  */
@@ -122,6 +122,7 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
 //                return result;
                 return AsyncRpcResult.newDefaultAsyncResult(invocation);
             } else {
+                //直接异步调用／
                 AsyncRpcResult asyncRpcResult = new AsyncRpcResult(inv);
                 CompletableFuture<Object> responseFuture = currentClient.request(inv, timeout);
                 responseFuture.whenComplete((obj, t) -> {

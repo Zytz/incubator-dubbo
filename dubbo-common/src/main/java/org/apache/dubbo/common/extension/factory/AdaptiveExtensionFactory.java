@@ -26,6 +26,7 @@ import java.util.List;
 
 /**
  * AdaptiveExtensionFactory
+ * adaptive的解决方案，是解决默认spi所需要的依赖；一般注解放在method上以及类上（暂时只有compile上）
  */
 @Adaptive
 public class AdaptiveExtensionFactory implements ExtensionFactory {

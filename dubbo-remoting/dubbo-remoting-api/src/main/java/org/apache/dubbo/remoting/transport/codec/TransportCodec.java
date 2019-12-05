@@ -34,7 +34,7 @@ import java.io.OutputStream;
  * TransportCodec
  */
 public class TransportCodec extends AbstractCodec {
-
+    //解密
     @Override
     public void encode(Channel channel, ChannelBuffer buffer, Object message) throws IOException {
         OutputStream output = new ChannelBufferOutputStream(buffer);
@@ -45,7 +45,7 @@ public class TransportCodec extends AbstractCodec {
             ((Cleanable) objectOutput).cleanup();
         }
     }
-
+    //加密
     @Override
     public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {
         InputStream input = new ChannelBufferInputStream(buffer);
